@@ -7,116 +7,158 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+  <!-- Google Fonts y Font Awesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    body { font-family: 'Poppins', sans-serif; }
     #map { height: 400px; }
     .modal { display: none; }
     .modal.active { display: flex; }
 
     /* Custom color from request */
     .bg-nativa-green { background-color: #1E3B14; }
-    .bg-nativa-green:hover { background-color: #2a521e; } /* Slightly lighter for hover */
+    .bg-nativa-green-hover:hover { background-color: #2a521e; }
     .text-nativa-green { color: #1E3B14; }
     .border-nativa-green { border-color: #1E3B14; }
   </style>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="bg-gray-100">
   <!-- Navbar -->
-  <nav class="bg-nativa-green text-white p-4 shadow-lg">
+  <nav class="bg-nativa-green text-white p-4 shadow-lg sticky top-0 z-50">
     <div class="container mx-auto flex justify-between items-center">
-      <img src="https://www.nativagreen.cl/imagenes/logo.png" alt="Nativa Green Logo" class="h-10">
-      <div>
-        <button onclick="showSection('dashboard')" class="px-4 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors">Dashboard</button>
-        <button onclick="showSection('clients')" class="px-4 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors">Clientes</button>
-        <button onclick="showSection('tariffs')" class="px-4 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors">Tarifas</button>
-        <button onclick="showSection('create-quotation')" class="px-4 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors">Crear Cotización</button>
-        <button onclick="showSection('others')" class="px-4 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors">Otros</button>
+      <div class="flex items-center">
+        <img src="https://www.nativagreen.cl/imagenes/logo.png" alt="Nativa Green Logo" class="h-10 mr-3">
+        <span class="text-xl font-bold">Nativa Green</span>
       </div>
+      <!-- Menú para escritorio -->
+      <div class="hidden md:flex space-x-2">
+        <button onclick="showSection('dashboard')" class="px-3 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors"><i class="fas fa-chart-line mr-2"></i>Dashboard</button>
+        <button onclick="showSection('clients')" class="px-3 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors"><i class="fas fa-users mr-2"></i>Clientes</button>
+        <button onclick="showSection('tariffs')" class="px-3 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors"><i class="fas fa-tags mr-2"></i>Tarifas</button>
+        <button onclick="showSection('create-quotation')" class="px-3 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors"><i class="fas fa-plus-circle mr-2"></i>Crear Cotización</button>
+        <button onclick="showSection('others')" class="px-3 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors"><i class="fas fa-cogs mr-2"></i>Otros</button>
+      </div>
+      <!-- Botón de menú para móvil -->
+      <div class="md:hidden">
+        <button id="mobile-menu-button" class="text-white focus:outline-none">
+          <i class="fas fa-bars fa-lg"></i>
+        </button>
+      </div>
+    </div>
+    <!-- Menú desplegable para móvil -->
+    <div id="mobile-menu" class="hidden md:hidden mt-4">
+      <button onclick="showSection('dashboard')" class="block w-full text-left px-4 py-3 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors"><i class="fas fa-chart-line mr-2"></i>Dashboard</button>
+      <button onclick="showSection('clients')" class="block w-full text-left px-4 py-3 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors"><i class="fas fa-users mr-2"></i>Clientes</button>
+      <button onclick="showSection('tariffs')" class="block w-full text-left px-4 py-3 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors"><i class="fas fa-tags mr-2"></i>Tarifas</button>
+      <button onclick="showSection('create-quotation')" class="block w-full text-left px-4 py-3 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors"><i class="fas fa-plus-circle mr-2"></i>Crear Cotización</button>
+      <button onclick="showSection('others')" class="block w-full text-left px-4 py-3 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors"><i class="fas fa-cogs mr-2"></i>Otros</button>
     </div>
   </nav>
 
   <!-- Main Content -->
-  <div class="container mx-auto p-4">
+  <main class="container mx-auto p-4 md:p-6">
     <!-- Dashboard -->
     <section id="dashboard" class="section">
-      <h2 class="text-2xl font-bold mb-4 pb-2 border-b-2 border-nativa-green text-nativa-green">Dashboard</h2>
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div class="bg-white p-6 rounded-lg shadow-md">
-          <h3 class="text-lg text-gray-600">Cotizaciones Abiertas</h3>
-          <p class="text-3xl font-semibold mt-2">5</p>
+        <h2 class="text-3xl font-bold mb-6 pb-2 border-b-2 border-nativa-green text-nativa-green"><i class="fas fa-chart-line mr-3"></i>Dashboard</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-white p-6 rounded-lg shadow-lg flex items-center transform hover:scale-105 transition-transform">
+                <i class="fas fa-folder-open text-4xl text-yellow-500 mr-4"></i>
+                <div>
+                    <h3 class="text-lg text-gray-600">Cotizaciones Abiertas</h3>
+                    <p class="text-3xl font-semibold mt-1">5</p>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-lg flex items-center transform hover:scale-105 transition-transform">
+                <i class="fas fa-check-circle text-4xl text-green-500 mr-4"></i>
+                <div>
+                    <h3 class="text-lg text-gray-600">Cotizaciones Aprobadas</h3>
+                    <p class="text-3xl font-semibold mt-1">3</p>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-lg flex items-center transform hover:scale-105 transition-transform">
+                <i class="fas fa-file-invoice text-4xl text-blue-500 mr-4"></i>
+                <div>
+                    <h3 class="text-lg text-gray-600">Órdenes Generadas</h3>
+                    <p class="text-3xl font-semibold mt-1">2</p>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-lg flex items-center transform hover:scale-105 transition-transform">
+                <i class="fas fa-dollar-sign text-4xl text-purple-500 mr-4"></i>
+                <div>
+                    <h3 class="text-lg text-gray-600">Ventas Concretadas</h3>
+                    <p class="text-3xl font-semibold mt-1">$150,000</p>
+                </div>
+            </div>
         </div>
-        <div class="bg-white p-6 rounded-lg shadow-md">
-          <h3 class="text-lg text-gray-600">Cotizaciones Aprobadas</h3>
-          <p class="text-3xl font-semibold mt-2">3</p>
+        <h3 class="text-2xl mt-10 mb-4 font-bold text-gray-700">Cotizaciones Recientes</h3>
+        <div class="bg-white rounded-lg shadow-lg overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="p-4 text-left font-semibold">Código</th>
+                        <th class="p-4 text-left font-semibold">Cliente</th>
+                        <th class="p-4 text-left font-semibold">Total</th>
+                        <th class="p-4 text-left font-semibold">Estado</th>
+                        <th class="p-4 text-left font-semibold">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="quotations-table">
+                    <!-- Llenado por JS -->
+                </tbody>
+            </table>
         </div>
-        <div class="bg-white p-6 rounded-lg shadow-md">
-          <h3 class="text-lg text-gray-600">Órdenes Generadas</h3>
-          <p class="text-3xl font-semibold mt-2">2</p>
-        </div>
-        <div class="bg-white p-6 rounded-lg shadow-md">
-          <h3 class="text-lg text-gray-600">Ventas Concretadas</h3>
-          <p class="text-3xl font-semibold mt-2">$150,000</p>
-        </div>
-      </div>
-      <h3 class="text-xl mt-8 mb-4 font-bold text-gray-700">Cotizaciones Recientes</h3>
-      <table class="w-full bg-white rounded-lg shadow-md overflow-hidden">
-        <thead class="bg-gray-200">
-          <tr>
-            <th class="p-3 text-left">Código</th>
-            <th class="p-3 text-left">Cliente</th>
-            <th class="p-3 text-left">Total</th>
-            <th class="p-3 text-left">Estado</th>
-            <th class="p-3 text-left">Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="quotations-table">
-          <!-- Llenado por JS -->
-        </tbody>
-      </table>
     </section>
 
     <!-- Clientes -->
     <section id="clients" class="section hidden">
-      <h2 class="text-2xl font-bold mb-4 pb-2 border-b-2 border-nativa-green text-nativa-green">Clientes</h2>
-      <button onclick="openClientModal('new')" class="bg-nativa-green text-white px-4 py-2 rounded-md mb-4 transition-colors">Nuevo Cliente</button>
-      <table class="w-full bg-white rounded-lg shadow-md overflow-hidden">
-        <thead class="bg-gray-200">
-          <tr>
-            <th class="p-3 text-left">Nombre</th>
-            <th class="p-3 text-left">RUC</th>
-            <th class="p-3 text-left">Contacto</th>
-            <th class="p-3 text-left">Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="clients-table">
-          <!-- Llenado por JS -->
-        </tbody>
-      </table>
+      <h2 class="text-2xl font-bold mb-4 pb-2 border-b-2 border-nativa-green text-nativa-green"><i class="fas fa-users mr-3"></i>Clientes</h2>
+      <button onclick="openClientModal('new')" class="bg-nativa-green bg-nativa-green-hover text-white px-4 py-2 rounded-md mb-4 transition-colors shadow-md"><i class="fas fa-plus mr-2"></i>Nuevo Cliente</button>
+      <div class="bg-white rounded-lg shadow-lg overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-200">
+            <tr>
+              <th class="p-4 text-left font-semibold">Nombre</th>
+              <th class="p-4 text-left font-semibold">RUC</th>
+              <th class="p-4 text-left font-semibold">Contacto</th>
+              <th class="p-4 text-left font-semibold">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="clients-table">
+            <!-- Llenado por JS -->
+          </tbody>
+        </table>
+      </div>
     </section>
 
     <!-- Tarifas -->
     <section id="tariffs" class="section hidden">
-      <h2 class="text-2xl font-bold mb-4 pb-2 border-b-2 border-nativa-green text-nativa-green">Tarifas</h2>
-      <button onclick="openTariffModal('new')" class="bg-nativa-green text-white px-4 py-2 rounded-md mb-4 transition-colors">Nueva Tarifa</button>
-      <table class="w-full bg-white rounded-lg shadow-md overflow-hidden">
-        <thead class="bg-gray-200">
-          <tr>
-            <th class="p-3 text-left">Nombre</th>
-            <th class="p-3 text-left">Cliente</th>
-            <th class="p-3 text-left">Contenedor</th>
-            <th class="p-3 text-left">Precio/km</th>
-            <th class="p-3 text-left">Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="tariffs-table">
-          <!-- Llenado por JS -->
-        </tbody>
-      </table>
+      <h2 class="text-2xl font-bold mb-4 pb-2 border-b-2 border-nativa-green text-nativa-green"><i class="fas fa-tags mr-3"></i>Tarifas</h2>
+      <button onclick="openTariffModal('new')" class="bg-nativa-green bg-nativa-green-hover text-white px-4 py-2 rounded-md mb-4 transition-colors shadow-md"><i class="fas fa-plus mr-2"></i>Nueva Tarifa</button>
+      <div class="bg-white rounded-lg shadow-lg overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-200">
+            <tr>
+              <th class="p-4 text-left font-semibold">Nombre</th>
+              <th class="p-4 text-left font-semibold">Cliente</th>
+              <th class="p-4 text-left font-semibold">Contenedor</th>
+              <th class="p-4 text-left font-semibold">Precio/km</th>
+              <th class="p-4 text-left font-semibold">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tariffs-table">
+            <!-- Llenado por JS -->
+          </tbody>
+        </table>
+      </div>
     </section>
 
     <!-- Crear Cotización -->
     <section id="create-quotation" class="section hidden">
-      <h2 class="text-2xl font-bold mb-4 pb-2 border-b-2 border-nativa-green text-nativa-green">Crear Cotización</h2>
-      <form id="quotation-form" class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold mb-4 pb-2 border-b-2 border-nativa-green text-nativa-green"><i class="fas fa-plus-circle mr-3"></i>Crear Cotización</h2>
+      <form id="quotation-form" class="bg-white p-6 rounded-lg shadow-lg">
         <div class="mb-4">
           <label class="block text-sm font-bold mb-2">Cliente</label>
           <select id="client-id" class="w-full p-2 border rounded-md"></select>
@@ -129,7 +171,7 @@
         </div>
         <div class="mb-4 bg-gray-50 p-4 rounded-md border">
           <label class="block text-sm font-bold mb-2">Detalles de la Tarifa</label>
-          <div id="tariff-details" class="text-sm grid grid-cols-2 gap-2">
+          <div id="tariff-details" class="text-sm grid grid-cols-1 md:grid-cols-2 gap-2">
             <p><strong>Contenedor:</strong> <span id="tariff-container">N/A</span></p>
             <p><strong>Camión:</strong> <span id="tariff-truck">N/A</span></p>
             <p><strong>Precio por Km:</strong> <span id="tariff-price-per-km">0</span> CLP</p>
@@ -149,58 +191,62 @@
         <div class="mb-4 flex items-center">
           <label class="block text-sm font-bold mr-2">Km</label>
           <input id="km" type="number" class="w-1/2 p-2 border rounded-md" placeholder="Kilómetros">
-          <button type="button" onclick="openMapModal(0)" class="bg-blue-500 text-white px-4 py-2 rounded-md ml-2 hover:bg-blue-600 transition-colors">Seleccionar en Mapa</button>
+          <button type="button" onclick="openMapModal(0)" class="bg-blue-500 text-white px-4 py-2 rounded-md ml-2 hover:bg-blue-600 transition-colors"><i class="fas fa-map-marker-alt mr-2"></i>Mapa</button>
         </div>
-        <div class="mb-4">
-          <label class="block text-sm font-bold mb-2"><input type="checkbox" id="return-trip" class="mr-2"> Incluir Vuelta</label>
-          <label class="block text-sm font-bold mb-2"><input type="checkbox" id="return-to-origin" class="mr-2"> Volver al Origen (x2 distancia)</label>
+        <div class="mb-4 space-y-2">
+          <label class="flex items-center text-sm font-bold"><input type="checkbox" id="return-trip" class="mr-2 h-4 w-4"> Incluir Vuelta</label>
+          <label class="flex items-center text-sm font-bold"><input type="checkbox" id="return-to-origin" class="mr-2 h-4 w-4"> Volver al Origen (x2 distancia)</label>
         </div>
         <div id="additional-destinations" class="mb-4"></div>
         <div id="calculation-details" class="mb-4 border-t pt-4 mt-4"></div>
-        <button type="submit" class="bg-nativa-green text-white px-4 py-2 rounded-md transition-colors">Guardar Cotización</button>
-        <button type="button" onclick="generatePDF()" class="bg-gray-600 text-white px-4 py-2 rounded-md ml-2 hover:bg-gray-700 transition-colors">Exportar PDF</button>
+        <button type="submit" class="bg-nativa-green bg-nativa-green-hover text-white px-4 py-2 rounded-md transition-colors"><i class="fas fa-save mr-2"></i>Guardar Cotización</button>
+        <button type="button" onclick="generatePDF()" class="bg-red-600 text-white px-4 py-2 rounded-md ml-2 hover:bg-red-700 transition-colors"><i class="fas fa-file-pdf mr-2"></i>Exportar PDF</button>
       </form>
     </section>
 
     <!-- Others Section -->
     <section id="others" class="section hidden">
-      <h2 class="text-2xl font-bold mb-4 pb-2 border-b-2 border-nativa-green text-nativa-green">Otros</h2>
+      <h2 class="text-2xl font-bold mb-4 pb-2 border-b-2 border-nativa-green text-nativa-green"><i class="fas fa-cogs mr-3"></i>Otros</h2>
       <!-- Containers -->
-      <h3 class="text-xl font-bold mb-4 text-gray-700">Contenedores</h3>
-      <button onclick="openContainerModal('new')" class="bg-nativa-green text-white px-4 py-2 rounded-md mb-4 transition-colors">Nuevo Contenedor</button>
-      <table class="w-full bg-white rounded-lg shadow-md overflow-hidden mb-8">
-        <thead class="bg-gray-200">
-          <tr>
-            <th class="p-3 text-left">Nombre</th>
-            <th class="p-3 text-left">Precio Base</th>
-            <th class="p-3 text-left">Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="containers-table">
-          <!-- Filled by JS -->
-        </tbody>
-      </table>
+      <h3 class="text-xl font-bold mb-4 text-gray-700"><i class="fas fa-box-open mr-2"></i>Contenedores</h3>
+      <button onclick="openContainerModal('new')" class="bg-nativa-green bg-nativa-green-hover text-white px-4 py-2 rounded-md mb-4 transition-colors"><i class="fas fa-plus mr-2"></i>Nuevo Contenedor</button>
+      <div class="bg-white rounded-lg shadow-lg overflow-x-auto mb-8">
+          <table class="w-full">
+            <thead class="bg-gray-200">
+              <tr>
+                <th class="p-4 text-left font-semibold">Nombre</th>
+                <th class="p-4 text-left font-semibold">Precio Base</th>
+                <th class="p-4 text-left font-semibold">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="containers-table">
+              <!-- Filled by JS -->
+            </tbody>
+          </table>
+      </div>
       <!-- Trucks -->
-      <h3 class="text-xl font-bold mb-4 text-gray-700">Camiones</h3>
-      <button onclick="openTruckModal('new')" class="bg-nativa-green text-white px-4 py-2 rounded-md mb-4 transition-colors">Nuevo Camión</button>
-      <table class="w-full bg-white rounded-lg shadow-md overflow-hidden">
-        <thead class="bg-gray-200">
-          <tr>
-            <th class="p-3 text-left">Nombre</th>
-            <th class="p-3 text-left">Capacidad (Toneladas)</th>
-            <th class="p-3 text-left">Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="trucks-table">
-          <!-- Filled by JS -->
-        </tbody>
-      </table>
+      <h3 class="text-xl font-bold mb-4 text-gray-700"><i class="fas fa-truck mr-2"></i>Camiones</h3>
+      <button onclick="openTruckModal('new')" class="bg-nativa-green bg-nativa-green-hover text-white px-4 py-2 rounded-md mb-4 transition-colors"><i class="fas fa-plus mr-2"></i>Nuevo Camión</button>
+       <div class="bg-white rounded-lg shadow-lg overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-gray-200">
+              <tr>
+                <th class="p-4 text-left font-semibold">Nombre</th>
+                <th class="p-4 text-left font-semibold">Capacidad (Toneladas)</th>
+                <th class="p-4 text-left font-semibold">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="trucks-table">
+              <!-- Filled by JS -->
+            </tbody>
+          </table>
+      </div>
     </section>
-  </div>
+  </main>
 
   <!-- Modals -->
-  <div id="client-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white p-6 rounded-lg shadow-xl w-1/2">
+  <div id="client-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+    <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
       <h2 id="client-modal-title" class="text-xl font-bold mb-4">Nuevo Cliente</h2>
       <form id="client-form">
         <div class="mb-4"><label class="block text-sm font-bold mb-2">Nombre</label><input id="client-name" type="text" class="w-full p-2 border rounded-md" required></div>
@@ -208,14 +254,16 @@
         <div class="mb-4"><label class="block text-sm font-bold mb-2">Contacto</label><input id="client-contact" type="text" class="w-full p-2 border rounded-md"></div>
         <div class="mb-4"><label class="block text-sm font-bold mb-2">Teléfono</label><input id="client-phone" type="text" class="w-full p-2 border rounded-md"></div>
         <div class="mb-4"><label class="block text-sm font-bold mb-2">Email</label><input id="client-email" type="email" class="w-full p-2 border rounded-md"></div>
-        <button type="submit" class="bg-nativa-green text-white px-4 py-2 rounded-md transition-colors">Guardar</button>
-        <button type="button" onclick="closeClientModal()" class="bg-gray-600 text-white px-4 py-2 rounded-md ml-2 hover:bg-gray-700 transition-colors">Cerrar</button>
+        <div class="flex justify-end">
+            <button type="button" onclick="closeClientModal()" class="bg-gray-600 text-white px-4 py-2 rounded-md mr-2 hover:bg-gray-700 transition-colors">Cerrar</button>
+            <button type="submit" class="bg-nativa-green bg-nativa-green-hover text-white px-4 py-2 rounded-md transition-colors">Guardar</button>
+        </div>
       </form>
     </div>
   </div>
 
-  <div id="tariff-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white p-6 rounded-lg shadow-xl w-1/2">
+  <div id="tariff-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+    <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
       <h2 id="tariff-modal-title" class="text-xl font-bold mb-4">Nueva Tarifa</h2>
       <form id="tariff-form">
         <div class="mb-4"><label class="block text-sm font-bold mb-2">Nombre</label><input id="tariff-name" type="text" class="w-full p-2 border rounded-md" required></div>
@@ -224,14 +272,16 @@
         <div class="mb-4"><label class="block text-sm font-bold mb-2">Camión</label><select id="tariff-truck-id" class="w-full p-2 border rounded-md"></select></div>
         <div class="mb-4"><label class="block text-sm font-bold mb-2">Precio por Km</label><input id="tariff-price-per-km" type="number" step="0.01" class="w-full p-2 border rounded-md" required></div>
         <div class="mb-4"><label class="block text-sm font-bold mb-2">Precio Contenedor</label><input id="tariff-price-container" type="number" step="0.01" class="w-full p-2 border rounded-md" required></div>
-        <button type="submit" class="bg-nativa-green text-white px-4 py-2 rounded-md transition-colors">Guardar</button>
-        <button type="button" onclick="closeTariffModal()" class="bg-gray-600 text-white px-4 py-2 rounded-md ml-2 hover:bg-gray-700 transition-colors">Cerrar</button>
+        <div class="flex justify-end">
+            <button type="button" onclick="closeTariffModal()" class="bg-gray-600 text-white px-4 py-2 rounded-md mr-2 hover:bg-gray-700 transition-colors">Cerrar</button>
+            <button type="submit" class="bg-nativa-green bg-nativa-green-hover text-white px-4 py-2 rounded-md transition-colors">Guardar</button>
+        </div>
       </form>
     </div>
   </div>
 
-  <div id="container-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white p-6 rounded-lg shadow-xl w-1/2">
+  <div id="container-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+    <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
       <h2 id="container-modal-title" class="text-xl font-bold mb-4">Nuevo Contenedor</h2>
       <form id="container-form">
         <div class="mb-4">
@@ -242,14 +292,16 @@
           <label class="block text-sm font-bold mb-2">Precio Base</label>
           <input id="container-base-price" type="number" step="0.01" class="w-full p-2 border rounded-md" required>
         </div>
-        <button type="submit" class="bg-nativa-green text-white px-4 py-2 rounded-md transition-colors">Guardar</button>
-        <button type="button" onclick="closeContainerModal()" class="bg-gray-600 text-white px-4 py-2 rounded-md ml-2 hover:bg-gray-700 transition-colors">Cerrar</button>
+        <div class="flex justify-end">
+            <button type="button" onclick="closeContainerModal()" class="bg-gray-600 text-white px-4 py-2 rounded-md mr-2 hover:bg-gray-700 transition-colors">Cerrar</button>
+            <button type="submit" class="bg-nativa-green bg-nativa-green-hover text-white px-4 py-2 rounded-md transition-colors">Guardar</button>
+        </div>
       </form>
     </div>
   </div>
 
-  <div id="truck-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white p-6 rounded-lg shadow-xl w-1/2">
+  <div id="truck-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+    <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
       <h2 id="truck-modal-title" class="text-xl font-bold mb-4">Nuevo Camión</h2>
       <form id="truck-form">
         <div class="mb-4">
@@ -260,20 +312,24 @@
           <label class="block text-sm font-bold mb-2">Capacidad (Toneladas)</label>
           <input id="truck-capacity" type="number" step="0.01" class="w-full p-2 border rounded-md" required>
         </div>
-        <button type="submit" class="bg-nativa-green text-white px-4 py-2 rounded-md transition-colors">Guardar</button>
-        <button type="button" onclick="closeTruckModal()" class="bg-gray-600 text-white px-4 py-2 rounded-md ml-2 hover:bg-gray-700 transition-colors">Cerrar</button>
+        <div class="flex justify-end">
+            <button type="button" onclick="closeTruckModal()" class="bg-gray-600 text-white px-4 py-2 rounded-md mr-2 hover:bg-gray-700 transition-colors">Cerrar</button>
+            <button type="submit" class="bg-nativa-green bg-nativa-green-hover text-white px-4 py-2 rounded-md transition-colors">Guardar</button>
+        </div>
       </form>
     </div>
   </div>
 
-  <div id="map-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white p-6 rounded-lg shadow-xl w-3/4">
+  <div id="map-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+    <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-4xl">
       <h2 class="text-xl font-bold mb-4">Seleccionar Ruta</h2>
       <div id="map" class="rounded-md border"></div>
-      <div class="mt-4">
+      <div class="mt-4 flex justify-between items-center">
         <p><strong>Distancia:</strong> <span id="map-distance">0 km</span></p>
-        <button onclick="confirmMapSelection()" class="bg-nativa-green text-white px-4 py-2 rounded-md mt-2 transition-colors">Confirmar</button>
-        <button onclick="closeMapModal()" class="bg-gray-600 text-white px-4 py-2 rounded-md mt-2 ml-2 hover:bg-gray-700 transition-colors">Cerrar</button>
+        <div>
+            <button onclick="closeMapModal()" class="bg-gray-600 text-white px-4 py-2 rounded-md mr-2 hover:bg-gray-700 transition-colors">Cerrar</button>
+            <button onclick="confirmMapSelection()" class="bg-nativa-green bg-nativa-green-hover text-white px-4 py-2 rounded-md transition-colors">Confirmar</button>
+        </div>
       </div>
     </div>
   </div>
@@ -281,7 +337,21 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
   <script>
-    // Datos simulados (en producción, vendrían de la API)
+    // --- START RESPONSIVE NAVBAR SCRIPT ---
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuButton.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+    const mobileMenuLinks = mobileMenu.querySelectorAll('button');
+    mobileMenuLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+      });
+    });
+    // --- END RESPONSIVE NAVBAR SCRIPT ---
+
+    // --- START APPLICATION LOGIC SCRIPT ---
     const clients = [
       { id: 1, name: "Cliente A", ruc: "12345678-9", contactName: "Juan Pérez", contactPhone: "123456789", email: "juan@cliente.com" },
       { id: 2, name: "Cliente B", ruc: "98765432-1", contactName: "Ana Gómez", contactPhone: "987654321", email: "ana@cliente.com" },
@@ -303,30 +373,27 @@
       { id: 2, code: "QUOT-002", clientId: 2, total: 200000, status: "approved" },
     ];
 
-    // Estado para el mapa y rutas
     let map, waypoints = [], control;
     let routes = [
       { origin: null, originName: '', destination: null, destinationName: '', km: 0 }
     ];
     let currentRouteIndex = 0;
 
-    // Mostrar secciones
     function showSection(sectionId) {
       document.querySelectorAll('.section').forEach(section => section.classList.add('hidden'));
       document.getElementById(sectionId).classList.remove('hidden');
     }
 
-    // Llenar tablas y selects
     function populateClients() {
       const table = document.getElementById('clients-table');
       table.innerHTML = clients.map(client => `
         <tr class="border-b hover:bg-gray-50">
-          <td class="p-3">${client.name}</td>
-          <td class="p-3">${client.ruc || ''}</td>
-          <td class="p-3">${client.contactName || ''}</td>
-          <td class="p-3">
-            <button onclick="openClientModal('edit', ${client.id})" class="text-blue-500 hover:underline">Editar</button>
-            <button onclick="deleteClient(${client.id})" class="text-red-500 ml-2 hover:underline">Eliminar</button>
+          <td class="p-4">${client.name}</td>
+          <td class="p-4">${client.ruc || ''}</td>
+          <td class="p-4">${client.contactName || ''}</td>
+          <td class="p-4">
+            <button onclick="openClientModal('edit', ${client.id})" class="text-blue-500 hover:underline"><i class="fas fa-edit"></i></button>
+            <button onclick="deleteClient(${client.id})" class="text-red-500 ml-3 hover:underline"><i class="fas fa-trash"></i></button>
           </td>
         </tr>
       `).join('');
@@ -344,13 +411,13 @@
       const table = document.getElementById('tariffs-table');
       table.innerHTML = tariffs.map(tariff => `
         <tr class="border-b hover:bg-gray-50">
-          <td class="p-3">${tariff.name}</td>
-          <td class="p-3">${tariff.clientId ? clients.find(c => c.id === tariff.clientId)?.name : 'Global'}</td>
-          <td class="p-3">${containers.find(c => c.id === tariff.containerId)?.name}</td>
-          <td class="p-3">${tariff.pricePerKm}</td>
-          <td class="p-3">
-            <button onclick="openTariffModal('edit', ${tariff.id})" class="text-blue-500 hover:underline">Editar</button>
-            <button onclick="deleteTariff(${tariff.id})" class="text-red-500 ml-2 hover:underline">Eliminar</button>
+          <td class="p-4">${tariff.name}</td>
+          <td class="p-4">${tariff.clientId ? clients.find(c => c.id === tariff.clientId)?.name : 'Global'}</td>
+          <td class="p-4">${containers.find(c => c.id === tariff.containerId)?.name}</td>
+          <td class="p-4">${tariff.pricePerKm}</td>
+          <td class="p-4">
+            <button onclick="openTariffModal('edit', ${tariff.id})" class="text-blue-500 hover:underline"><i class="fas fa-edit"></i></button>
+            <button onclick="deleteTariff(${tariff.id})" class="text-red-500 ml-3 hover:underline"><i class="fas fa-trash"></i></button>
           </td>
         </tr>
       `).join('');
@@ -375,13 +442,13 @@
       const table = document.getElementById('quotations-table');
       table.innerHTML = quotations.map(q => `
         <tr class="border-b hover:bg-gray-50">
-          <td class="p-3">${q.code}</td>
-          <td class="p-3">${clients.find(c => c.id === q.clientId)?.name}</td>
-          <td class="p-3">${q.total}</td>
-          <td class="p-3">${q.status}</td>
-          <td class="p-3">
-            <button onclick="viewQuotation(${q.id})" class="text-blue-500 hover:underline">Ver</button>
-            <button onclick="generatePDF(${q.id})" class="text-green-500 ml-2 hover:underline">PDF</button>
+          <td class="p-4">${q.code}</td>
+          <td class="p-4">${clients.find(c => c.id === q.clientId)?.name}</td>
+          <td class="p-4">${q.total.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</td>
+          <td class="p-4"><span class="px-2 py-1 text-xs rounded-full ${q.status === 'approved' ? 'bg-green-200 text-green-800' : 'bg-yellow-200 text-yellow-800'}">${q.status}</span></td>
+          <td class="p-4">
+            <button onclick="viewQuotation(${q.id})" class="text-blue-500 hover:underline"><i class="fas fa-eye"></i></button>
+            <button onclick="generatePDF(${q.id})" class="text-red-500 ml-3 hover:underline"><i class="fas fa-file-pdf"></i></button>
           </td>
         </tr>
       `).join('');
@@ -391,11 +458,11 @@
       const table = document.getElementById('containers-table');
       table.innerHTML = containers.map(container => `
         <tr class="border-b hover:bg-gray-50">
-          <td class="p-3">${container.name}</td>
-          <td class="p-3">${container.basePrice}</td>
-          <td class="p-3">
-            <button onclick="openContainerModal('edit', ${container.id})" class="text-blue-500 hover:underline">Editar</button>
-            <button onclick="deleteContainer(${container.id})" class="text-red-500 ml-2 hover:underline">Eliminar</button>
+          <td class="p-4">${container.name}</td>
+          <td class="p-4">${container.basePrice.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</td>
+          <td class="p-4">
+            <button onclick="openContainerModal('edit', ${container.id})" class="text-blue-500 hover:underline"><i class="fas fa-edit"></i></button>
+            <button onclick="deleteContainer(${container.id})" class="text-red-500 ml-3 hover:underline"><i class="fas fa-trash"></i></button>
           </td>
         </tr>
       `).join('');
@@ -405,21 +472,21 @@
       const table = document.getElementById('trucks-table');
       table.innerHTML = trucks.map(truck => `
         <tr class="border-b hover:bg-gray-50">
-          <td class="p-3">${truck.name}</td>
-          <td class="p-3">${truck.capacityTons}</td>
-          <td class="p-3">
-            <button onclick="openTruckModal('edit', ${truck.id})" class="text-blue-500 hover:underline">Editar</button>
-            <button onclick="deleteTruck(${truck.id})" class="text-red-500 ml-2 hover:underline">Eliminar</button>
+          <td class="p-4">${truck.name}</td>
+          <td class="p-4">${truck.capacityTons}</td>
+          <td class="p-4">
+            <button onclick="openTruckModal('edit', ${truck.id})" class="text-blue-500 hover:underline"><i class="fas fa-edit"></i></button>
+            <button onclick="deleteTruck(${truck.id})" class="text-red-500 ml-3 hover:underline"><i class="fas fa-trash"></i></button>
           </td>
         </tr>
       `).join('');
     }
 
-    // Modal Clientes
     let currentClientId = null;
     function openClientModal(mode, id = null) {
       currentClientId = id;
       document.getElementById('client-modal-title').textContent = mode === 'new' ? 'Nuevo Cliente' : 'Editar Cliente';
+      document.getElementById('client-form').reset();
       if (id) {
         const client = clients.find(c => c.id === id);
         document.getElementById('client-name').value = client.name;
@@ -427,8 +494,6 @@
         document.getElementById('client-contact').value = client.contactName || '';
         document.getElementById('client-phone').value = client.contactPhone || '';
         document.getElementById('client-email').value = client.email || '';
-      } else {
-        document.getElementById('client-form').reset();
       }
       document.getElementById('client-modal').classList.add('active');
     }
@@ -448,7 +513,8 @@
         email: document.getElementById('client-email').value,
       };
       if (currentClientId) {
-        clients[clients.findIndex(c => c.id === currentClientId)] = client;
+        const index = clients.findIndex(c => c.id === currentClientId);
+        clients[index] = client;
       } else {
         clients.push(client);
       }
@@ -457,17 +523,18 @@
     });
 
     function deleteClient(id) {
-      if (confirm('¿Eliminar cliente?')) {
-        clients.splice(clients.findIndex(c => c.id === id), 1);
+      if (confirm('¿Está seguro de que desea eliminar este cliente?')) {
+        const index = clients.findIndex(c => c.id === id);
+        clients.splice(index, 1);
         populateClients();
       }
     }
 
-    // Modal Tarifas
     let currentTariffId = null;
     function openTariffModal(mode, id = null) {
       currentTariffId = id;
       document.getElementById('tariff-modal-title').textContent = mode === 'new' ? 'Nueva Tarifa' : 'Editar Tarifa';
+       document.getElementById('tariff-form').reset();
       if (id) {
         const tariff = tariffs.find(t => t.id === id);
         document.getElementById('tariff-name').value = tariff.name;
@@ -476,8 +543,6 @@
         document.getElementById('tariff-truck-id').value = tariff.truckId;
         document.getElementById('tariff-price-per-km').value = tariff.pricePerKm;
         document.getElementById('tariff-price-container').value = tariff.priceContainer;
-      } else {
-        document.getElementById('tariff-form').reset();
       }
       document.getElementById('tariff-modal').classList.add('active');
     }
@@ -491,14 +556,15 @@
       const tariff = {
         id: currentTariffId || Date.now(),
         name: document.getElementById('tariff-name').value,
-        clientId: document.getElementById('tariff-client-id').value || null,
+        clientId: parseInt(document.getElementById('tariff-client-id').value) || null,
         containerId: parseInt(document.getElementById('tariff-container-id').value),
         truckId: parseInt(document.getElementById('tariff-truck-id').value),
         pricePerKm: parseFloat(document.getElementById('tariff-price-per-km').value),
         priceContainer: parseFloat(document.getElementById('tariff-price-container').value),
       };
       if (currentTariffId) {
-        tariffs[tariffs.findIndex(t => t.id === currentTariffId)] = tariff;
+        const index = tariffs.findIndex(t => t.id === currentTariffId);
+        tariffs[index] = tariff;
       } else {
         tariffs.push(tariff);
       }
@@ -507,23 +573,22 @@
     });
 
     function deleteTariff(id) {
-      if (confirm('¿Eliminar tarifa?')) {
-        tariffs.splice(tariffs.findIndex(t => t.id === id), 1);
+      if (confirm('¿Está seguro de que desea eliminar esta tarifa?')) {
+        const index = tariffs.findIndex(t => t.id === id);
+        tariffs.splice(index, 1);
         populateTariffs();
       }
     }
 
-    // Modal Contenedores
     let currentContainerId = null;
     function openContainerModal(mode, id = null) {
       currentContainerId = id;
       document.getElementById('container-modal-title').textContent = mode === 'new' ? 'Nuevo Contenedor' : 'Editar Contenedor';
+      document.getElementById('container-form').reset();
       if (id) {
         const container = containers.find(c => c.id === id);
         document.getElementById('container-name').value = container.name;
         document.getElementById('container-base-price').value = container.basePrice;
-      } else {
-        document.getElementById('container-form').reset();
       }
       document.getElementById('container-modal').classList.add('active');
     }
@@ -540,7 +605,8 @@
         basePrice: parseFloat(document.getElementById('container-base-price').value),
       };
       if (currentContainerId) {
-        containers[containers.findIndex(c => c.id === currentContainerId)] = container;
+        const index = containers.findIndex(c => c.id === currentContainerId);
+        containers[index] = container;
       } else {
         containers.push(container);
       }
@@ -550,24 +616,23 @@
     });
 
     function deleteContainer(id) {
-      if (confirm('¿Eliminar contenedor?')) {
-        containers.splice(containers.findIndex(c => c.id === id), 1);
+      if (confirm('¿Está seguro de que desea eliminar este contenedor?')) {
+        const index = containers.findIndex(c => c.id === id);
+        containers.splice(index, 1);
         populateContainers();
         populateTariffs();
       }
     }
 
-    // Modal Camiones
     let currentTruckId = null;
     function openTruckModal(mode, id = null) {
       currentTruckId = id;
       document.getElementById('truck-modal-title').textContent = mode === 'new' ? 'Nuevo Camión' : 'Editar Camión';
+      document.getElementById('truck-form').reset();
       if (id) {
         const truck = trucks.find(t => t.id === id);
         document.getElementById('truck-name').value = truck.name;
         document.getElementById('truck-capacity').value = truck.capacityTons;
-      } else {
-        document.getElementById('truck-form').reset();
       }
       document.getElementById('truck-modal').classList.add('active');
     }
@@ -584,7 +649,8 @@
         capacityTons: parseFloat(document.getElementById('truck-capacity').value),
       };
       if (currentTruckId) {
-        trucks[trucks.findIndex(t => t.id === currentTruckId)] = truck;
+        const index = trucks.findIndex(t => t.id === currentTruckId);
+        trucks[index] = truck;
       } else {
         trucks.push(truck);
       }
@@ -594,22 +660,22 @@
     });
 
     function deleteTruck(id) {
-      if (confirm('¿Eliminar camión?')) {
-        trucks.splice(trucks.findIndex(t => t.id === id), 1);
+      if (confirm('¿Está seguro de que desea eliminar este camión?')) {
+        const index = trucks.findIndex(t => t.id === id);
+        trucks.splice(index, 1);
         populateTrucks();
         populateTariffs();
       }
     }
 
-    // Actualizar detalles de la tarifa seleccionada
     function updateTariffDetails() {
       const tariffId = parseInt(document.getElementById('tariff-id').value);
       const tariff = tariffs.find(t => t.id === tariffId);
       if (tariff) {
         document.getElementById('tariff-container').textContent = containers.find(c => c.id === tariff.containerId)?.name || 'N/A';
         document.getElementById('tariff-truck').textContent = trucks.find(t => t.id === tariff.truckId)?.name || 'N/A';
-        document.getElementById('tariff-price-per-km').textContent = tariff.pricePerKm.toFixed(2);
-        document.getElementById('tariff-price-container').textContent = tariff.priceContainer.toFixed(2);
+        document.getElementById('tariff-price-per-km').textContent = tariff.pricePerKm;
+        document.getElementById('tariff-price-container').textContent = tariff.priceContainer;
       } else {
         document.getElementById('tariff-container').textContent = 'N/A';
         document.getElementById('tariff-truck').textContent = 'N/A';
@@ -619,7 +685,6 @@
       calculateQuotation();
     }
 
-    // Manejar rutas dinámicas
     function updateReturnTripFields() {
       const returnTrip = document.getElementById('return-trip').checked;
       const returnToOrigin = document.getElementById('return-to-origin').checked;
@@ -629,14 +694,17 @@
       if (returnTrip && !returnToOrigin) {
         routes[1] = routes[1] || { origin: routes[0].destination, originName: routes[0].destinationName, destination: null, destinationName: '', km: 0 };
         additionalDestinations.innerHTML = `
-          <div class="mb-4">
-            <label class="block text-sm font-bold mb-2">Destino de Vuelta</label>
-            <input id="dest-address-1" type="text" class="w-full p-2 border rounded" placeholder="Ingrese el nombre del destino de vuelta" value="${routes[1].destinationName || ''}">
-          </div>
-          <div class="mb-4 flex items-center">
-            <label class="block text-sm font-bold mr-2">Km de Vuelta</label>
-            <input id="km-1" type="number" class="w-1/2 p-2 border rounded" placeholder="Kilómetros" value="${routes[1].km || ''}">
-            <button type="button" onclick="openMapModal(1)" class="bg-blue-500 text-white px-4 py-2 rounded ml-2">Seleccionar en Mapa</button>
+          <div class="p-4 bg-gray-50 rounded-md mt-4">
+            <h4 class="text-md font-bold mb-2">Tramo de Vuelta</h4>
+            <div class="mb-4">
+              <label class="block text-sm font-bold mb-2">Destino de Vuelta</label>
+              <input id="dest-address-1" type="text" class="w-full p-2 border rounded" placeholder="Ingrese el destino de vuelta" value="${routes[1].destinationName || ''}">
+            </div>
+            <div class="flex items-center">
+              <label class="block text-sm font-bold mr-2">Km de Vuelta</label>
+              <input id="km-1" type="number" class="w-1/2 p-2 border rounded" placeholder="Kilómetros" value="${routes[1].km || ''}">
+              <button type="button" onclick="openMapModal(1)" class="bg-blue-500 text-white px-4 py-2 rounded ml-2"><i class="fas fa-map-marker-alt mr-2"></i>Mapa</button>
+            </div>
           </div>
         `;
         document.getElementById('dest-address-1').addEventListener('input', () => {
@@ -654,7 +722,6 @@
       calculateQuotation();
     }
 
-    // Mapa con Leaflet Routing Machine
     function openMapModal(routeIndex) {
       currentRouteIndex = routeIndex;
       document.getElementById('map-modal').classList.add('active');
@@ -675,22 +742,23 @@
           control = null;
         }
         map.eachLayer(function (layer) {
-          if (layer instanceof L.Marker) {
+          if (layer instanceof L.Marker || layer instanceof L.Polyline) {
             map.removeLayer(layer);
           }
         });
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
         document.getElementById('map-distance').textContent = '0 km';
 
         if (routeIndex === 1 && routes[0].destination) {
           waypoints.push(routes[0].destination);
-          L.marker(routes[0].destination).addTo(map).bindPopup(`Origen: ${routes[0].destinationName || 'Destino Anterior'}`).openPopup();
+          L.marker(routes[0].destination).addTo(map).bindPopup(`<b>Origen (Vuelta):</b><br>${routes[0].destinationName || 'Destino Anterior'}`).openPopup();
         }
 
         map.on('click', function(e) {
-          if (waypoints.length < 2) {
-            if (routeIndex === 1 && waypoints.length === 0) return;
-            waypoints.push(L.latLng(e.latlng.lat, e.latlng.lng));
+          const maxWaypoints = (routeIndex === 1 && routes[0].destination) ? 2 : 2;
+          if (waypoints.length < maxWaypoints) {
+            waypoints.push(e.latlng);
             const pointLabel = waypoints.length === 1 && routeIndex === 0 ? 'Origen' : 'Destino';
             L.marker(e.latlng).addTo(map).bindPopup(pointLabel).openPopup();
             if (waypoints.length === 2) {
@@ -702,13 +770,13 @@
                 routeWhileDragging: false,
                 show: false,
                 addWaypoints: false,
-                lineOptions: { styles: [{ color: 'blue', opacity: 0.7, weight: 5 }] },
+                lineOptions: { styles: [{ color: '#1E3B14', opacity: 0.8, weight: 6 }] },
                 createMarker: function() { return null; }
               }).addTo(map);
 
               control.on('routesfound', function(ev) {
                 var distancia = ev.routes[0].summary.totalDistance / 1000;
-                document.getElementById('map-distance').textContent = `${distancia.toFixed(2)} km`;
+                document.getElementById('map-distance').textContent = `${distancia.toFixed(1)} km`;
               });
             }
           }
@@ -723,50 +791,72 @@
       }
     }
 
-    function confirmMapSelection() {
-      if (waypoints.length === 2) {
-        const distancia = parseFloat(document.getElementById('map-distance').textContent);
-        const roundedDistance = Math.round(distancia);
-        routes[currentRouteIndex].origin = waypoints[0];
-        routes[currentRouteIndex].destination = waypoints[1];
-        routes[currentRouteIndex].km = roundedDistance;
+    async function confirmMapSelection() {
+        if (waypoints.length === 2) {
+            const distancia = parseFloat(document.getElementById('map-distance').textContent);
+            const roundedDistance = Math.round(distancia);
 
-        if (currentRouteIndex === 0) {
-          routes[0].originName = routes[0].originName || prompt('Ingrese el nombre del lugar de origen:', 'Origen') || 'Origen';
-          routes[0].destinationName = routes[0].destinationName || prompt('Ingrese el nombre del lugar de destino:', 'Destino') || 'Destino';
-          document.getElementById('origin-address').value = routes[0].originName;
-          document.getElementById('dest-address').value = routes[0].destinationName;
-        } else if (currentRouteIndex === 1) {
-          routes[1].destinationName = routes[1].destinationName || prompt('Ingrese el nombre del lugar de destino de vuelta:', 'Destino Vuelta') || 'Destino Vuelta';
-          document.getElementById('dest-address-1').value = routes[1].destinationName;
+            routes[currentRouteIndex].km = roundedDistance;
+            
+            const originLatLng = waypoints[0];
+            const destLatLng = waypoints[1];
+
+            routes[currentRouteIndex].origin = originLatLng;
+            routes[currentRouteIndex].destination = destLatLng;
+
+            try {
+                const originName = await getAddressFromLatLng(originLatLng.lat, originLatLng.lng);
+                const destName = await getAddressFromLatLng(destLatLng.lat, destLatLng.lng);
+
+                if (currentRouteIndex === 0) {
+                    routes[0].originName = originName;
+                    routes[0].destinationName = destName;
+                    document.getElementById('origin-address').value = originName;
+                    document.getElementById('dest-address').value = destName;
+                } else if (currentRouteIndex === 1) {
+                    routes[1].destinationName = destName;
+                    document.getElementById('dest-address-1').value = destName;
+                }
+
+                if (currentRouteIndex === 0 && routes[1]) {
+                    routes[1].origin = destLatLng;
+                    routes[1].originName = destName;
+                }
+
+            } catch (error) {
+                console.error("Error obteniendo nombres de calles:", error);
+                 if (currentRouteIndex === 0) {
+                    routes[0].originName = prompt('No se pudo obtener el nombre. Ingrese el origen:', 'Origen');
+                    routes[0].destinationName = prompt('No se pudo obtener el nombre. Ingrese el destino:', 'Destino');
+                    document.getElementById('origin-address').value = routes[0].originName;
+                    document.getElementById('dest-address').value = routes[0].destinationName;
+                 }
+            }
+
+            document.getElementById(`km${currentRouteIndex > 0 ? '-' + currentRouteIndex : ''}`).value = roundedDistance;
+            closeMapModal();
+            calculateQuotation();
+        } else {
+            alert('Selecciona dos puntos en el mapa para calcular la distancia.');
         }
-
-        if (currentRouteIndex === 0 && routes[1]) {
-          routes[1].origin = waypoints[1];
-          routes[1].originName = routes[0].destinationName;
-          if (document.getElementById('dest-address-1')) {
-            document.getElementById('dest-address-1').value = routes[1].destinationName;
-          }
-        }
-
-        document.getElementById(`km${currentRouteIndex ? '-' + currentRouteIndex : ''}`).value = roundedDistance;
-        closeMapModal();
-        calculateQuotation();
-      } else {
-        alert('Selecciona dos puntos en el mapa para calcular la distancia.');
-      }
+    }
+    
+    async function getAddressFromLatLng(lat, lng) {
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+        const data = await response.json();
+        return data.display_name || `Lat: ${lat.toFixed(4)}, Lon: ${lng.toFixed(4)}`;
     }
 
-    // Calcular cotización
+
     function calculateQuotation() {
-      const clientId = parseInt(document.getElementById('client-id').value);
       const tariffId = parseInt(document.getElementById('tariff-id').value);
       const returnTrip = document.getElementById('return-trip').checked;
       const returnToOrigin = document.getElementById('return-to-origin').checked;
+      const calculationDetails = document.getElementById('calculation-details');
 
       const tariff = tariffs.find(t => t.id === tariffId);
       if (!tariff) {
-        document.getElementById('calculation-details').innerHTML = '<p class="text-red-500 font-bold">Seleccione una tarifa válida para calcular.</p>';
+        calculationDetails.innerHTML = '<p class="text-red-500 font-bold">Seleccione una tarifa válida para calcular.</p>';
         return;
       }
 
@@ -776,22 +866,16 @@
       let km = routes[0].km || (kmInput ? Math.round(parseFloat(kmInput.value) || 0) : 0);
 
       if (returnToOrigin) {
-        // Si "Volver al Origen" está seleccionado, duplicar la distancia del tramo principal
         totalKm = km * 2;
-        costoKmDetails = `<p><strong>Costo Tramo Ida y Vuelta (${totalKm} km):</strong> ${(tariff.pricePerKm * totalKm).toFixed(0)} CLP</p>`;
-      } else if (returnTrip) {
-        // Si "Incluir Vuelta" está seleccionado, sumar los kilómetros de ambos tramos
+        costoKmDetails = `<div class="flex justify-between"><span>Costo Tramo Ida y Vuelta (${totalKm} km):</span> <span>${(tariff.pricePerKm * totalKm).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</span></div>`;
+      } else {
         totalKm = km;
-        costoKmDetails = `<p><strong>Costo Tramo Ida (${km} km):</strong> ${(tariff.pricePerKm * km).toFixed(0)} CLP</p>`;
-        if (routes[1]) {
+        costoKmDetails = `<div class="flex justify-between"><span>Costo Tramo Ida (${km} km):</span> <span>${(tariff.pricePerKm * km).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</span></div>`;
+        if (returnTrip && routes[1]) {
           const kmReturn = routes[1].km || (document.getElementById('km-1') ? Math.round(parseFloat(document.getElementById('km-1').value) || 0) : 0);
           totalKm += kmReturn;
-          costoKmDetails += `<p><strong>Costo Tramo Vuelta (${kmReturn} km):</strong> ${(tariff.pricePerKm * kmReturn).toFixed(0)} CLP</p>`;
+          costoKmDetails += `<div class="flex justify-between"><span>Costo Tramo Vuelta (${kmReturn} km):</span> <span>${(tariff.pricePerKm * kmReturn).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</span></div>`;
         }
-      } else {
-        // Solo el tramo principal
-        totalKm = km;
-        costoKmDetails = `<p><strong>Costo Tramo Ida (${km} km):</strong> ${(tariff.pricePerKm * km).toFixed(0)} CLP</p>`;
       }
 
       const costoContenedor = tariff.priceContainer;
@@ -799,14 +883,14 @@
       const iva = subtotal * 0.19;
       const total = subtotal + iva;
 
-      document.getElementById('calculation-details').innerHTML = `
+      calculationDetails.innerHTML = `
         <h4 class="text-md font-bold mb-2">Resumen de Cotización</h4>
-        <div class="space-y-1 text-sm">
+        <div class="space-y-2 text-sm">
           ${costoKmDetails}
-          <p><strong>Costo Base Contenedor:</strong> ${costoContenedor.toFixed(0)} CLP</p>
-          <p class="font-semibold mt-2 pt-2 border-t"><strong>Subtotal:</strong> ${subtotal.toFixed(0)} CLP</p>
-          <p><strong>IVA (19%):</strong> ${iva.toFixed(0)} CLP</p>
-          <p class="text-lg font-bold text-nativa-green"><strong>Total:</strong> ${total.toFixed(0)} CLP</p>
+          <div class="flex justify-between"><span>Costo Base Contenedor:</span> <span>${costoContenedor.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</span></div>
+          <div class="flex justify-between font-semibold mt-2 pt-2 border-t"><span>Subtotal:</span> <span>${subtotal.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</span></div>
+          <div class="flex justify-between"><span>IVA (19%):</span> <span>${iva.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</span></div>
+          <div class="flex justify-between text-lg font-bold text-nativa-green mt-2 pt-2 border-t"><span>Total:</span> <span>${total.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</span></div>
         </div>
       `;
     }
@@ -818,28 +902,31 @@
         alert('Por favor, seleccione una tarifa válida.');
         return;
       }
+      const totalText = document.querySelector('#calculation-details span:last-child').textContent;
+      const totalValue = parseFloat(totalText.replace(/\$|\./g, '').replace(',', '.'));
+
       const quotation = {
         id: Date.now(),
-        code: `QUOT-${Date.now()}`,
+        code: `QUOT-${Date.now().toString().slice(-4)}`,
         clientId: parseInt(document.getElementById('client-id').value),
         tariffId: tariffId,
-        total: parseFloat(document.querySelector('#calculation-details strong:last-child').textContent.replace(' CLP', '')),
+        total: totalValue,
         status: 'draft',
       };
       quotations.push(quotation);
       populateQuotations();
-      alert('Cotización guardada.');
+      alert('Cotización guardada exitosamente.');
+      showSection('dashboard');
     });
 
     function generatePDF(id) {
-      alert(`Generando PDF para cotización ${id}... (Implementar con jsPDF o backend)`);
+      alert(`Generando PDF para cotización... (Esta es una función de demostración)`);
     }
 
     function viewQuotation(id) {
-      alert(`Mostrando detalles de cotización ${id}... (Implementar vista detallada)`);
+      alert(`Mostrando detalles de la cotización... (Esta es una función de demostración)`);
     }
 
-    // Inicializar
     document.addEventListener('DOMContentLoaded', () => {
       populateClients();
       populateTariffs();
@@ -848,35 +935,28 @@
       populateTrucks();
       showSection('dashboard');
 
-      document.getElementById('client-id').addEventListener('change', () => {
-        updateTariffDetails();
-        calculateQuotation();
-      });
-      document.getElementById('tariff-id').addEventListener('change', () => {
-        updateTariffDetails();
-        calculateQuotation();
-      });
-      document.getElementById('km').addEventListener('input', () => {
-        const kmValue = Math.round(parseFloat(document.getElementById('km').value) || 0);
+      document.getElementById('client-id').addEventListener('change', updateTariffDetails);
+      document.getElementById('tariff-id').addEventListener('change', updateTariffDetails);
+      
+      const kmInput = document.getElementById('km');
+      kmInput.addEventListener('input', () => {
+        const kmValue = Math.round(parseFloat(kmInput.value) || 0);
         routes[0].km = kmValue;
-        document.getElementById('km').value = kmValue;
+        kmInput.value = kmValue;
         calculateQuotation();
       });
+
       document.getElementById('return-trip').addEventListener('change', updateReturnTripFields);
       document.getElementById('return-to-origin').addEventListener('change', updateReturnTripFields);
+
       document.getElementById('origin-address').addEventListener('input', () => {
         routes[0].originName = document.getElementById('origin-address').value;
       });
       document.getElementById('dest-address').addEventListener('input', () => {
         routes[0].destinationName = document.getElementById('dest-address').value;
-        if (routes[1]) {
-          routes[1].originName = routes[0].destinationName;
-          if (document.getElementById('dest-address-1')) {
-            document.getElementById('dest-address-1').value = routes[1].destinationName;
-          }
-        }
       });
     });
+    // --- END APPLICATION LOGIC SCRIPT ---
   </script>
 </body>
 </html>
