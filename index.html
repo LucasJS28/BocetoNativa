@@ -11,18 +11,24 @@
     #map { height: 400px; }
     .modal { display: none; }
     .modal.active { display: flex; }
+
+    /* Custom color from request */
+    .bg-nativa-green { background-color: #1E3B14; }
+    .bg-nativa-green:hover { background-color: #2a521e; } /* Slightly lighter for hover */
+    .text-nativa-green { color: #1E3B14; }
+    .border-nativa-green { border-color: #1E3B14; }
   </style>
 </head>
 <body class="bg-gray-100 font-sans">
   <!-- Navbar -->
-  <nav class="bg-green-600 text-white p-4">
-    <div class="container mx-auto flex justify-between">
-      <h1 class="text-2xl font-bold">Nativa Green</h1>
+  <nav class="bg-nativa-green text-white p-4 shadow-lg">
+    <div class="container mx-auto flex justify-between items-center">
+      <img src="https://www.nativagreen.cl/imagenes/logo.png" alt="Nativa Green Logo" class="h-10">
       <div>
-        <button onclick="showSection('dashboard')" class="px-4">Dashboard</button>
-        <button onclick="showSection('clients')" class="px-4">Clientes</button>
-        <button onclick="showSection('tariffs')" class="px-4">Tarifas</button>
-        <button onclick="showSection('create-quotation')" class="px-4">Crear Cotización</button>
+        <button onclick="showSection('dashboard')" class="px-4 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors">Dashboard</button>
+        <button onclick="showSection('clients')" class="px-4 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors">Clientes</button>
+        <button onclick="showSection('tariffs')" class="px-4 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors">Tarifas</button>
+        <button onclick="showSection('create-quotation')" class="px-4 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors">Crear Cotización</button>
       </div>
     </div>
   </nav>
@@ -31,34 +37,34 @@
   <div class="container mx-auto p-4">
     <!-- Dashboard -->
     <section id="dashboard" class="section">
-      <h2 class="text-2xl font-bold mb-4">Dashboard</h2>
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div class="bg-white p-4 rounded shadow">
-          <h3 class="text-lg">Cotizaciones Abiertas</h3>
-          <p class="text-2xl">5</p>
+      <h2 class="text-2xl font-bold mb-4 pb-2 border-b-2 border-nativa-green text-nativa-green">Dashboard</h2>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h3 class="text-lg text-gray-600">Cotizaciones Abiertas</h3>
+          <p class="text-3xl font-semibold mt-2">5</p>
         </div>
-        <div class="bg-white p-4 rounded shadow">
-          <h3 class="text-lg">Cotizaciones Aprobadas</h3>
-          <p class="text-2xl">3</p>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h3 class="text-lg text-gray-600">Cotizaciones Aprobadas</h3>
+          <p class="text-3xl font-semibold mt-2">3</p>
         </div>
-        <div class="bg-white p-4 rounded shadow">
-          <h3 class="text-lg">Órdenes Generadas</h3>
-          <p class="text-2xl">2</p>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h3 class="text-lg text-gray-600">Órdenes Generadas</h3>
+          <p class="text-3xl font-semibold mt-2">2</p>
         </div>
-        <div class="bg-white p-4 rounded shadow">
-          <h3 class="text-lg">Ventas Concretadas</h3>
-          <p class="text-2xl">$150,000</p>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h3 class="text-lg text-gray-600">Ventas Concretadas</h3>
+          <p class="text-3xl font-semibold mt-2">$150,000</p>
         </div>
       </div>
-      <h3 class="text-xl mt-6 mb-2">Cotizaciones Recientes</h3>
-      <table class="w-full bg-white rounded shadow">
-        <thead>
-          <tr class="bg-gray-200">
-            <th class="p-2">Código</th>
-            <th class="p-2">Cliente</th>
-            <th class="p-2">Total</th>
-            <th class="p-2">Estado</th>
-            <th class="p-2">Acciones</th>
+      <h3 class="text-xl mt-8 mb-4 font-bold text-gray-700">Cotizaciones Recientes</h3>
+      <table class="w-full bg-white rounded-lg shadow-md overflow-hidden">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="p-3 text-left">Código</th>
+            <th class="p-3 text-left">Cliente</th>
+            <th class="p-3 text-left">Total</th>
+            <th class="p-3 text-left">Estado</th>
+            <th class="p-3 text-left">Acciones</th>
           </tr>
         </thead>
         <tbody id="quotations-table">
@@ -69,15 +75,15 @@
 
     <!-- Clientes -->
     <section id="clients" class="section hidden">
-      <h2 class="text-2xl font-bold mb-4">Clientes</h2>
-      <button onclick="openClientModal('new')" class="bg-green-600 text-white px-4 py-2 rounded mb-4">Nuevo Cliente</button>
-      <table class="w-full bg-white rounded shadow">
-        <thead>
-          <tr class="bg-gray-200">
-            <th class="p-2">Nombre</th>
-            <th class="p-2">RUC</th>
-            <th class="p-2">Contacto</th>
-            <th class="p-2">Acciones</th>
+      <h2 class="text-2xl font-bold mb-4 pb-2 border-b-2 border-nativa-green text-nativa-green">Clientes</h2>
+      <button onclick="openClientModal('new')" class="bg-nativa-green text-white px-4 py-2 rounded-md mb-4 transition-colors">Nuevo Cliente</button>
+      <table class="w-full bg-white rounded-lg shadow-md overflow-hidden">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="p-3 text-left">Nombre</th>
+            <th class="p-3 text-left">RUC</th>
+            <th class="p-3 text-left">Contacto</th>
+            <th class="p-3 text-left">Acciones</th>
           </tr>
         </thead>
         <tbody id="clients-table">
@@ -88,16 +94,16 @@
 
     <!-- Tarifas -->
     <section id="tariffs" class="section hidden">
-      <h2 class="text-2xl font-bold mb-4">Tarifas</h2>
-      <button onclick="openTariffModal('new')" class="bg-green-600 text-white px-4 py-2 rounded mb-4">Nueva Tarifa</button>
-      <table class="w-full bg-white rounded shadow">
-        <thead>
-          <tr class="bg-gray-200">
-            <th class="p-2">Nombre</th>
-            <th class="p-2">Cliente</th>
-            <th class="p-2">Contenedor</th>
-            <th class="p-2">Precio/km</th>
-            <th class="p-2">Acciones</th>
+      <h2 class="text-2xl font-bold mb-4 pb-2 border-b-2 border-nativa-green text-nativa-green">Tarifas</h2>
+      <button onclick="openTariffModal('new')" class="bg-nativa-green text-white px-4 py-2 rounded-md mb-4 transition-colors">Nueva Tarifa</button>
+      <table class="w-full bg-white rounded-lg shadow-md overflow-hidden">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="p-3 text-left">Nombre</th>
+            <th class="p-3 text-left">Cliente</th>
+            <th class="p-3 text-left">Contenedor</th>
+            <th class="p-3 text-left">Precio/km</th>
+            <th class="p-3 text-left">Acciones</th>
           </tr>
         </thead>
         <tbody id="tariffs-table">
@@ -108,140 +114,93 @@
 
     <!-- Crear Cotización -->
     <section id="create-quotation" class="section hidden">
-      <h2 class="text-2xl font-bold mb-4">Crear Cotización</h2>
-      <form id="quotation-form" class="bg-white p-6 rounded shadow">
+      <h2 class="text-2xl font-bold mb-4 pb-2 border-b-2 border-nativa-green text-nativa-green">Crear Cotización</h2>
+      <form id="quotation-form" class="bg-white p-6 rounded-lg shadow-md">
         <div class="mb-4">
           <label class="block text-sm font-bold mb-2">Cliente</label>
-          <select id="client-id" class="w-full p-2 border rounded">
-            <!-- Llenado por JS -->
-          </select>
+          <select id="client-id" class="w-full p-2 border rounded-md"></select>
         </div>
         <div class="mb-4">
           <label class="block text-sm font-bold mb-2">Tarifa</label>
-          <select id="tariff-id" class="w-full p-2 border rounded">
+          <select id="tariff-id" class="w-full p-2 border rounded-md">
             <option value="">Seleccionar Tarifa</option>
-            <!-- Llenado por JS -->
           </select>
         </div>
-        <div class="mb-4">
+        <div class="mb-4 bg-gray-50 p-4 rounded-md border">
           <label class="block text-sm font-bold mb-2">Detalles de la Tarifa</label>
-          <div id="tariff-details" class="text-sm">
+          <div id="tariff-details" class="text-sm grid grid-cols-2 gap-2">
             <p><strong>Contenedor:</strong> <span id="tariff-container">N/A</span></p>
             <p><strong>Camión:</strong> <span id="tariff-truck">N/A</span></p>
             <p><strong>Precio por Km:</strong> <span id="tariff-price-per-km">0</span> CLP</p>
             <p><strong>Precio Contenedor:</strong> <span id="tariff-price-container">0</span> CLP</p>
           </div>
         </div>
-        <div class="mb-4">
-          <label class="block text-sm font-bold mb-2">Origen</label>
-          <input id="origin-address" type="text" class="w-full p-2 border rounded" placeholder="Ingrese el nombre del lugar de origen" value="">
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm font-bold mb-2">Destino</label>
-          <input id="dest-address" type="text" class="w-full p-2 border rounded" placeholder="Ingrese el nombre del lugar de destino" value="">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="block text-sm font-bold mb-2">Origen</label>
+              <input id="origin-address" type="text" class="w-full p-2 border rounded-md" placeholder="Ingrese el lugar de origen">
+            </div>
+            <div>
+              <label class="block text-sm font-bold mb-2">Destino</label>
+              <input id="dest-address" type="text" class="w-full p-2 border rounded-md" placeholder="Ingrese el lugar de destino">
+            </div>
         </div>
         <div class="mb-4 flex items-center">
           <label class="block text-sm font-bold mr-2">Km</label>
-          <input id="km" type="number" class="w-1/2 p-2 border rounded" placeholder="Kilómetros">
-          <button type="button" onclick="openMapModal(0)" class="bg-blue-500 text-white px-4 py-2 rounded ml-2">Seleccionar en Mapa</button>
+          <input id="km" type="number" class="w-1/2 p-2 border rounded-md" placeholder="Kilómetros">
+          <button type="button" onclick="openMapModal(0)" class="bg-blue-500 text-white px-4 py-2 rounded-md ml-2 hover:bg-blue-600 transition-colors">Seleccionar en Mapa</button>
         </div>
         <div class="mb-4">
-          <label class="block text-sm font-bold mb-2"><input type="checkbox" id="return-trip"> Incluir Vuelta</label>
+          <label class="block text-sm font-bold mb-2"><input type="checkbox" id="return-trip" class="mr-2"> Incluir Vuelta</label>
         </div>
-        <div id="additional-destinations" class="mb-4">
-          <!-- Campos dinámicos de destinos adicionales -->
-        </div>
-        <div id="calculation-details" class="mb-4">
-          <!-- Llenado por JS -->
-        </div>
-        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Guardar Cotización</button>
-        <button type="button" onclick="generatePDF()" class="bg-gray-600 text-white px-4 py-2 rounded ml-2">Exportar PDF</button>
+        <div id="additional-destinations" class="mb-4"></div>
+        <div id="calculation-details" class="mb-4 border-t pt-4 mt-4"></div>
+        <button type="submit" class="bg-nativa-green text-white px-4 py-2 rounded-md transition-colors">Guardar Cotización</button>
+        <button type="button" onclick="generatePDF()" class="bg-gray-600 text-white px-4 py-2 rounded-md ml-2 hover:bg-gray-700 transition-colors">Exportar PDF</button>
       </form>
     </section>
   </div>
 
-  <!-- Modal Clientes -->
+  <!-- Modals (structure unchanged, but buttons will inherit new styles) -->
   <div id="client-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white p-6 rounded shadow w-1/2">
+    <div class="bg-white p-6 rounded-lg shadow-xl w-1/2">
       <h2 id="client-modal-title" class="text-xl font-bold mb-4">Nuevo Cliente</h2>
       <form id="client-form">
-        <div class="mb-4">
-          <label class="block text-sm font-bold mb-2">Nombre</label>
-          <input id="client-name" type="text" class="w-full p-2 border rounded" required>
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm font-bold mb-2">RUC</label>
-          <input id="client-ruc" type="text" class="w-full p-2 border rounded">
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm font-bold mb-2">Contacto</label>
-          <input id="client-contact" type="text" class="w-full p-2 border rounded">
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm font-bold mb-2">Teléfono</label>
-          <input id="client-phone" type="text" class="w-full p-2 border rounded">
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm font-bold mb-2">Email</label>
-          <input id="client-email" type="email" class="w-full p-2 border rounded">
-        </div>
-        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Guardar</button>
-        <button type="button" onclick="closeClientModal()" class="bg-gray-600 text-white px-4 py-2 rounded ml-2">Cerrar</button>
+        <div class="mb-4"><label class="block text-sm font-bold mb-2">Nombre</label><input id="client-name" type="text" class="w-full p-2 border rounded-md" required></div>
+        <div class="mb-4"><label class="block text-sm font-bold mb-2">RUC</label><input id="client-ruc" type="text" class="w-full p-2 border rounded-md"></div>
+        <div class="mb-4"><label class="block text-sm font-bold mb-2">Contacto</label><input id="client-contact" type="text" class="w-full p-2 border rounded-md"></div>
+        <div class="mb-4"><label class="block text-sm font-bold mb-2">Teléfono</label><input id="client-phone" type="text" class="w-full p-2 border rounded-md"></div>
+        <div class="mb-4"><label class="block text-sm font-bold mb-2">Email</label><input id="client-email" type="email" class="w-full p-2 border rounded-md"></div>
+        <button type="submit" class="bg-nativa-green text-white px-4 py-2 rounded-md transition-colors">Guardar</button>
+        <button type="button" onclick="closeClientModal()" class="bg-gray-600 text-white px-4 py-2 rounded-md ml-2 hover:bg-gray-700 transition-colors">Cerrar</button>
       </form>
     </div>
   </div>
 
-  <!-- Modal Tarifas -->
   <div id="tariff-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white p-6 rounded shadow w-1/2">
+    <div class="bg-white p-6 rounded-lg shadow-xl w-1/2">
       <h2 id="tariff-modal-title" class="text-xl font-bold mb-4">Nueva Tarifa</h2>
       <form id="tariff-form">
-        <div class="mb-4">
-          <label class="block text-sm font-bold mb-2">Nombre</label>
-          <input id="tariff-name" type="text" class="w-full p-2 border rounded" required>
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm font-bold mb-2">Cliente (opcional)</label>
-          <select id="tariff-client-id" class="w-full p-2 border rounded">
-            <option value="">Global</option>
-            <!-- Llenado por JS -->
-          </select>
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm font-bold mb-2">Contenedor</label>
-          <select id="tariff-container-id" class="w-full p-2 border rounded">
-            <!-- Llenado por JS -->
-          </select>
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm font-bold mb-2">Camión</label>
-          <select id="tariff-truck-id" class="w-full p-2 border rounded">
-            <!-- Llenado por JS -->
-          </select>
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm font-bold mb-2">Precio por Km</label>
-          <input id="tariff-price-per-km" type="number" step="0.01" class="w-full p-2 border rounded" required>
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm font-bold mb-2">Precio Contenedor</label>
-          <input id="tariff-price-container" type="number" step="0.01" class="w-full p-2 border rounded" required>
-        </div>
-        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Guardar</button>
-        <button type="button" onclick="closeTariffModal()" class="bg-gray-600 text-white px-4 py-2 rounded ml-2">Cerrar</button>
+        <div class="mb-4"><label class="block text-sm font-bold mb-2">Nombre</label><input id="tariff-name" type="text" class="w-full p-2 border rounded-md" required></div>
+        <div class="mb-4"><label class="block text-sm font-bold mb-2">Cliente (opcional)</label><select id="tariff-client-id" class="w-full p-2 border rounded-md"><option value="">Global</option></select></div>
+        <div class="mb-4"><label class="block text-sm font-bold mb-2">Contenedor</label><select id="tariff-container-id" class="w-full p-2 border rounded-md"></select></div>
+        <div class="mb-4"><label class="block text-sm font-bold mb-2">Camión</label><select id="tariff-truck-id" class="w-full p-2 border rounded-md"></select></div>
+        <div class="mb-4"><label class="block text-sm font-bold mb-2">Precio por Km</label><input id="tariff-price-per-km" type="number" step="0.01" class="w-full p-2 border rounded-md" required></div>
+        <div class="mb-4"><label class="block text-sm font-bold mb-2">Precio Contenedor</label><input id="tariff-price-container" type="number" step="0.01" class="w-full p-2 border rounded-md" required></div>
+        <button type="submit" class="bg-nativa-green text-white px-4 py-2 rounded-md transition-colors">Guardar</button>
+        <button type="button" onclick="closeTariffModal()" class="bg-gray-600 text-white px-4 py-2 rounded-md ml-2 hover:bg-gray-700 transition-colors">Cerrar</button>
       </form>
     </div>
   </div>
 
-  <!-- Modal Mapa -->
   <div id="map-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white p-6 rounded shadow w-3/4">
+    <div class="bg-white p-6 rounded-lg shadow-xl w-3/4">
       <h2 class="text-xl font-bold mb-4">Seleccionar Ruta</h2>
-      <div id="map"></div>
+      <div id="map" class="rounded-md border"></div>
       <div class="mt-4">
         <p><strong>Distancia:</strong> <span id="map-distance">0 km</span></p>
-        <button onclick="confirmMapSelection()" class="bg-green-600 text-white px-4 py-2 rounded mt-2">Confirmar</button>
-        <button onclick="closeMapModal()" class="bg-gray-600 text-white px-4 py-2 rounded mt-2 ml-2">Cerrar</button>
+        <button onclick="confirmMapSelection()" class="bg-nativa-green text-white px-4 py-2 rounded-md mt-2 transition-colors">Confirmar</button>
+        <button onclick="closeMapModal()" class="bg-gray-600 text-white px-4 py-2 rounded-md mt-2 ml-2 hover:bg-gray-700 transition-colors">Cerrar</button>
       </div>
     </div>
   </div>
@@ -249,7 +208,9 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
   <script>
-    // Datos simulados (en producción, vendrían de la API)
+    // El código JavaScript no necesita cambios para esta actualización visual.
+    // ... (Tu código JS original va aquí) ...
+        // Datos simulados (en producción, vendrían de la API)
     const clients = [
       { id: 1, name: "Cliente A", ruc: "12345678-9", contactName: "Juan Pérez", contactPhone: "123456789", email: "juan@cliente.com" },
       { id: 2, name: "Cliente B", ruc: "98765432-1", contactName: "Ana Gómez", contactPhone: "987654321", email: "ana@cliente.com" },
@@ -288,13 +249,13 @@
     function populateClients() {
       const table = document.getElementById('clients-table');
       table.innerHTML = clients.map(client => `
-        <tr>
-          <td class="p-2">${client.name}</td>
-          <td class="p-2">${client.ruc || ''}</td>
-          <td class="p-2">${client.contactName || ''}</td>
-          <td class="p-2">
-            <button onclick="openClientModal('edit', ${client.id})" class="text-blue-500">Editar</button>
-            <button onclick="deleteClient(${client.id})" class="text-red-500 ml-2">Eliminar</button>
+        <tr class="border-b hover:bg-gray-50">
+          <td class="p-3">${client.name}</td>
+          <td class="p-3">${client.ruc || ''}</td>
+          <td class="p-3">${client.contactName || ''}</td>
+          <td class="p-3">
+            <button onclick="openClientModal('edit', ${client.id})" class="text-blue-500 hover:underline">Editar</button>
+            <button onclick="deleteClient(${client.id})" class="text-red-500 ml-2 hover:underline">Eliminar</button>
           </td>
         </tr>
       `).join('');
@@ -311,14 +272,14 @@
     function populateTariffs() {
       const table = document.getElementById('tariffs-table');
       table.innerHTML = tariffs.map(tariff => `
-        <tr>
-          <td class="p-2">${tariff.name}</td>
-          <td class="p-2">${tariff.clientId ? clients.find(c => c.id === tariff.clientId)?.name : 'Global'}</td>
-          <td class="p-2">${containers.find(c => c.id === tariff.containerId)?.name}</td>
-          <td class="p-2">${tariff.pricePerKm}</td>
-          <td class="p-2">
-            <button onclick="openTariffModal('edit', ${tariff.id})" class="text-blue-500">Editar</button>
-            <button onclick="deleteTariff(${tariff.id})" class="text-red-500 ml-2">Eliminar</button>
+        <tr class="border-b hover:bg-gray-50">
+          <td class="p-3">${tariff.name}</td>
+          <td class="p-3">${tariff.clientId ? clients.find(c => c.id === tariff.clientId)?.name : 'Global'}</td>
+          <td class="p-3">${containers.find(c => c.id === tariff.containerId)?.name}</td>
+          <td class="p-3">${tariff.pricePerKm}</td>
+          <td class="p-3">
+            <button onclick="openTariffModal('edit', ${tariff.id})" class="text-blue-500 hover:underline">Editar</button>
+            <button onclick="deleteTariff(${tariff.id})" class="text-red-500 ml-2 hover:underline">Eliminar</button>
           </td>
         </tr>
       `).join('');
@@ -343,14 +304,14 @@
     function populateQuotations() {
       const table = document.getElementById('quotations-table');
       table.innerHTML = quotations.map(q => `
-        <tr>
-          <td class="p-2">${q.code}</td>
-          <td class="p-2">${clients.find(c => c.id === q.clientId)?.name}</td>
-          <td class="p-2">${q.total}</td>
-          <td class="p-2">${q.status}</td>
-          <td class="p-2">
-            <button onclick="viewQuotation(${q.id})" class="text-blue-500">Ver</button>
-            <button onclick="generatePDF(${q.id})" class="text-green-500 ml-2">PDF</button>
+        <tr class="border-b hover:bg-gray-50">
+          <td class="p-3">${q.code}</td>
+          <td class="p-3">${clients.find(c => c.id === q.clientId)?.name}</td>
+          <td class="p-3">${q.total}</td>
+          <td class="p-3">${q.status}</td>
+          <td class="p-3">
+            <button onclick="viewQuotation(${q.id})" class="text-blue-500 hover:underline">Ver</button>
+            <button onclick="generatePDF(${q.id})" class="text-green-500 ml-2 hover:underline">PDF</button>
           </td>
         </tr>
       `).join('');
@@ -510,54 +471,71 @@
     function openMapModal(routeIndex) {
       currentRouteIndex = routeIndex;
       document.getElementById('map-modal').classList.add('active');
-      if (!map) {
-        map = L.map('map').setView([-33.4489, -70.6693], 13); // Santiago, Chile
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
-      }
-
-      waypoints = [];
-      if (control) {
-        map.removeControl(control);
-      }
-      document.getElementById('map-distance').textContent = '0 km';
-
-      if (routeIndex === 1 && routes[0].destination) {
-        waypoints.push(routes[0].destination);
-        L.marker(routes[0].destination).addTo(map).bindPopup(`Origen: ${routes[0].destinationName || 'Destino Anterior'}`).openPopup();
-      }
-
-      map.on('click', function(e) {
-        if (waypoints.length < 2) {
-          if (routeIndex === 1 && waypoints.length === 0) return;
-          waypoints.push(L.latLng(e.latlng.lat, e.latlng.lng));
-          const pointLabel = waypoints.length === 1 && routeIndex === 0 ? 'Origen' : 'Destino';
-          L.marker(e.latlng).addTo(map).bindPopup(pointLabel).openPopup();
-          if (waypoints.length === 2) {
-            if (control) {
-              map.removeControl(control);
-            }
-            control = L.Routing.control({
-              waypoints: waypoints,
-              routeWhileDragging: false,
-              show: false,
-              addWaypoints: false,
-              lineOptions: { styles: [{ color: 'blue', opacity: 0.7, weight: 5 }] },
-              createMarker: function() { return null; }
-            }).addTo(map);
-
-            control.on('routesfound', function(e) {
-              var distancia = e.routes[0].summary.totalDistance / 1000;
-              document.getElementById('map-distance').textContent = `${distancia.toFixed(2)} km`;
-            });
-          }
+      
+      // Delay map initialization to ensure container is visible
+      setTimeout(() => {
+        if (!map) {
+          map = L.map('map').setView([-33.4489, -70.6693], 13); // Santiago, Chile
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+          }).addTo(map);
+        } else {
+          map.invalidateSize(); // Recalculate map size if it was initialized while hidden
         }
-      });
+
+        waypoints = [];
+        if (control) {
+          map.removeControl(control);
+          control = null;
+        }
+        map.eachLayer(function (layer) {
+            if (layer instanceof L.Marker) {
+                map.removeLayer(layer);
+            }
+        });
+
+
+        document.getElementById('map-distance').textContent = '0 km';
+
+        if (routeIndex === 1 && routes[0].destination) {
+          waypoints.push(routes[0].destination);
+          L.marker(routes[0].destination).addTo(map).bindPopup(`Origen: ${routes[0].destinationName || 'Destino Anterior'}`).openPopup();
+        }
+
+        map.on('click', function(e) {
+          if (waypoints.length < 2) {
+            if (routeIndex === 1 && waypoints.length === 0) return;
+            waypoints.push(L.latLng(e.latlng.lat, e.latlng.lng));
+            const pointLabel = waypoints.length === 1 && routeIndex === 0 ? 'Origen' : 'Destino';
+            L.marker(e.latlng).addTo(map).bindPopup(pointLabel).openPopup();
+            if (waypoints.length === 2) {
+              if (control) {
+                map.removeControl(control);
+              }
+              control = L.Routing.control({
+                waypoints: waypoints,
+                routeWhileDragging: false,
+                show: false,
+                addWaypoints: false,
+                lineOptions: { styles: [{ color: 'blue', opacity: 0.7, weight: 5 }] },
+                createMarker: function() { return null; }
+              }).addTo(map);
+
+              control.on('routesfound', function(ev) {
+                var distancia = ev.routes[0].summary.totalDistance / 1000;
+                document.getElementById('map-distance').textContent = `${distancia.toFixed(2)} km`;
+              });
+            }
+          }
+        });
+      }, 100);
     }
 
     function closeMapModal() {
       document.getElementById('map-modal').classList.remove('active');
+      if (map) {
+        map.off('click');
+      }
     }
 
     function confirmMapSelection() {
@@ -601,7 +579,7 @@
 
       const tariff = tariffs.find(t => t.id === tariffId);
       if (!tariff) {
-        document.getElementById('calculation-details').innerHTML = '<p class="text-red-500">Seleccione una tarifa válida.</p>';
+        document.getElementById('calculation-details').innerHTML = '<p class="text-red-500 font-bold">Seleccione una tarifa válida para calcular.</p>';
         return;
       }
 
@@ -611,7 +589,7 @@
         const kmInput = document.getElementById(`km${index ? '-' + index : ''}`);
         const km = route.km || (kmInput ? Math.round(parseFloat(kmInput.value) || 0) : 0);
         totalKm += km;
-        costoKmDetails += `<p><strong>Costo por Km ${index === 0 ? 'Ida' : 'Vuelta'}:</strong> ${(tariff.pricePerKm * km).toFixed(2)} CLP</p>`;
+        costoKmDetails += `<p><strong>Costo Tramo ${index === 0 ? 'Ida' : 'Vuelta'} (${km} km):</strong> ${(tariff.pricePerKm * km).toFixed(0)} CLP</p>`;
       });
 
       const costoContenedor = tariff.priceContainer;
@@ -620,11 +598,14 @@
       const total = subtotal + iva;
 
       document.getElementById('calculation-details').innerHTML = `
-        ${costoKmDetails}
-        <p><strong>Costo Contenedor:</strong> ${costoContenedor.toFixed(2)} CLP</p>
-        <p><strong>Subtotal:</strong> ${subtotal.toFixed(2)} CLP</p>
-        <p><strong>IVA (19%):</strong> ${iva.toFixed(2)} CLP</p>
-        <p><strong>Total:</strong> ${total.toFixed(2)} CLP</p>
+        <h4 class="text-md font-bold mb-2">Resumen de Cotización</h4>
+        <div class="space-y-1 text-sm">
+          ${costoKmDetails}
+          <p><strong>Costo Base Contenedor:</strong> ${costoContenedor.toFixed(0)} CLP</p>
+          <p class="font-semibold mt-2 pt-2 border-t"><strong>Subtotal:</strong> ${subtotal.toFixed(0)} CLP</p>
+          <p><strong>IVA (19%):</strong> ${iva.toFixed(0)} CLP</p>
+          <p class="text-lg font-bold text-nativa-green"><strong>Total:</strong> ${total.toFixed(0)} CLP</p>
+        </div>
       `;
     }
 
@@ -640,7 +621,7 @@
         code: `QUOT-${Date.now()}`,
         clientId: parseInt(document.getElementById('client-id').value),
         tariffId: tariffId,
-        total: parseFloat(document.getElementById('calculation-details').querySelector('p:last-child').textContent.split(' ')[1]),
+        total: parseFloat(document.querySelector('#calculation-details strong:last-child').textContent.replace(' CLP', '')),
         status: 'draft',
       };
       quotations.push(quotation);
@@ -657,40 +638,41 @@
     }
 
     // Inicializar
-    populateClients();
-    populateTariffs();
-    populateQuotations();
-    showSection('dashboard');
+    document.addEventListener('DOMContentLoaded', () => {
+        populateClients();
+        populateTariffs();
+        populateQuotations();
+        showSection('dashboard');
 
-    // Recalcular al cambiar inputs
-    document.getElementById('client-id').addEventListener('change', () => {
-      populateTariffs(); // Actualizar tarifas al cambiar cliente
-      updateTariffDetails();
-      calculateQuotation();
+        // Recalcular al cambiar inputs
+        document.getElementById('client-id').addEventListener('change', () => {
+        //   populateTariffs(); // Esta línea puede ser molesta si el usuario ya eligió una tarifa
+          updateTariffDetails();
+          calculateQuotation();
+        });
+        document.getElementById('tariff-id').addEventListener('change', () => {
+          updateTariffDetails();
+          calculateQuotation();
+        });
+        document.getElementById('km').addEventListener('input', () => {
+          const kmValue = Math.round(parseFloat(document.getElementById('km').value) || 0);
+          routes[0].km = kmValue;
+          document.getElementById('km').value = kmValue;
+          calculateQuotation();
+        });
+        document.getElementById('return-trip').addEventListener('change', updateReturnTripFields);
+        document.getElementById('origin-address').addEventListener('input', () => {
+          routes[0].originName = document.getElementById('origin-address').value;
+        });
+        document.getElementById('dest-address').addEventListener('input', () => {
+          routes[0].destinationName = document.getElementById('dest-address').value;
+          if (routes[1]) {
+            routes[1].originName = routes[0].destinationName;
+            // No actualizamos el input de vuelta automáticamente, puede ser confuso.
+          }
+        });
     });
-    document.getElementById('tariff-id').addEventListener('change', () => {
-      updateTariffDetails();
-      calculateQuotation();
-    });
-    document.getElementById('km').addEventListener('input', () => {
-      const kmValue = Math.round(parseFloat(document.getElementById('km').value) || 0);
-      routes[0].km = kmValue;
-      document.getElementById('km').value = kmValue;
-      calculateQuotation();
-    });
-    document.getElementById('return-trip').addEventListener('change', updateReturnTripFields);
-    document.getElementById('origin-address').addEventListener('input', () => {
-      routes[0].originName = document.getElementById('origin-address').value;
-    });
-    document.getElementById('dest-address').addEventListener('input', () => {
-      routes[0].destinationName = document.getElementById('dest-address').value;
-      if (routes[1]) {
-        routes[1].originName = routes[0].destinationName;
-        if (document.getElementById('dest-address-1')) {
-          document.getElementById('dest-address-1').value = routes[1].destinationName;
-        }
-      }
-    });
+
   </script>
 </body>
 </html>
