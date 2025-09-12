@@ -7,7 +7,6 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
-  <!-- Google Fonts y Font Awesome -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -17,22 +16,79 @@
     #map { height: 400px; }
     .modal { display: none; }
     .modal.active { display: flex; }
-    /* Custom color from request */
     .bg-nativa-green { background-color: #1E3B14; }
     .bg-nativa-green-hover:hover { background-color: #2a521e; }
     .text-nativa-green { color: #1E3B14; }
     .border-nativa-green { border-color: #1E3B14; }
+
+    /* Scroll Progress Bar */
+    #progress-bar-container {
+      position: fixed;
+      top: 64px; /* Adjust based on navbar height */
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background-color: #e5e7eb; /* Tailwind gray-200 */
+      z-index: 40;
+    }
+    #progress-bar {
+      height: 100%;
+      background-color: #1E3B14; /* Nativa Green */
+      width: 0;
+      transition: width 0.3s ease;
+    }
+
+    /* Horizontal Scroll Cue for Table */
+    .table-container {
+      position: relative;
+      overflow-x: auto;
+    }
+    .table-container::-webkit-scrollbar {
+      height: 8px;
+    }
+    .table-container::-webkit-scrollbar-thumb {
+      background-color: #1E3B14;
+      border-radius: 4px;
+    }
+    .table-container::-webkit-scrollbar-track {
+      background-color: #e5e7eb;
+    }
+    .scroll-cue {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+      width: 30px;
+      background: linear-gradient(to left, rgba(30, 59, 20, 0.3), transparent);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.3s ease;
+    }
+    .table-container.scrollable .scroll-cue {
+      display: flex;
+    }
+    .scroll-cue i {
+      color: #1E3B14;
+      font-size: 1.2rem;
+    }
   </style>
 </head>
 <body class="bg-gray-100">
+  <!-- Scroll Progress Bar -->
+  <div id="progress-bar-container">
+    <div id="progress-bar"></div>
+  </div>
+
   <!-- Navbar -->
   <nav class="bg-nativa-green text-white p-4 shadow-lg sticky top-0 z-50">
     <div class="container mx-auto flex justify-between items-center">
       <div class="flex items-center">
         <img src="https://www.nativagreen.cl/imagenes/logo.png" alt="Nativa Green Logo" class="h-10 mr-3">
         <span class="text-xl font-bold">Nativa Green</span>
+        <!-- User Type Indicator -->
+        <span id="user-type" class="ml-4 text-sm font-medium bg-white bg-opacity-20 px-2 py-1 rounded-md">Administrador</span>
       </div>
-      <!-- Menú para escritorio -->
       <div class="hidden md:flex space-x-2">
         <button onclick="showSection('dashboard')" class="px-3 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors"><i class="fas fa-chart-line mr-2"></i>Dashboard</button>
         <button onclick="showSection('clients')" class="px-3 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors"><i class="fas fa-users mr-2"></i>Clientes</button>
@@ -40,14 +96,12 @@
         <button onclick="showSection('create-quotation')" class="px-3 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors"><i class="fas fa-plus-circle mr-2"></i>Crear Cotización</button>
         <button onclick="showSection('others')" class="px-3 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors"><i class="fas fa-cogs mr-2"></i>Otros</button>
       </div>
-      <!-- Botón de menú para móvil -->
       <div class="md:hidden">
         <button id="mobile-menu-button" class="text-white focus:outline-none">
           <i class="fas fa-bars fa-lg"></i>
         </button>
       </div>
     </div>
-    <!-- Menú desplegable para móvil -->
     <div id="mobile-menu" class="hidden md:hidden mt-4">
       <button onclick="showSection('dashboard')" class="block w-full text-left px-4 py-3 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors"><i class="fas fa-chart-line mr-2"></i>Dashboard</button>
       <button onclick="showSection('clients')" class="block w-full text-left px-4 py-3 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors"><i class="fas fa-users mr-2"></i>Clientes</button>
@@ -93,7 +147,6 @@
         </div>
       </div>
       <h3 class="text-2xl mt-10 mb-4 font-bold text-gray-700">Cotizaciones Recientes</h3>
-      <!-- Add Search and Filter Controls -->
       <div class="bg-white p-4 rounded-lg shadow-lg mb-4">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
@@ -104,7 +157,6 @@
             <label class="block text-sm font-bold mb-2">Cliente</label>
             <select id="filter-client" class="w-full p-2 border rounded-md">
               <option value="">Todos los Clientes</option>
-              <!-- Populated by JS -->
             </select>
           </div>
           <div>
@@ -134,8 +186,8 @@
         </div>
         <button id="clear-filters" class="bg-gray-600 text-white px-4 py-2 rounded-md mt-4 hover:bg-gray-700 transition-colors"><i class="fas fa-times mr-2"></i>Limpiar Filtros</button>
       </div>
-      <div class="bg-white rounded-lg shadow-lg overflow-x-auto">
-        <table class="w-full">
+      <div class="table-container bg-white rounded-lg shadow-lg relative">
+        <table class="w-full min-w-[800px]">
           <thead class="bg-gray-200">
             <tr>
               <th class="p-4 text-left font-semibold">Código</th>
@@ -150,6 +202,7 @@
             <!-- Llenado por JS -->
           </tbody>
         </table>
+        <div class="scroll-cue"><i class="fas fa-arrow-right"></i></div>
       </div>
     </section>
 
@@ -248,7 +301,6 @@
     <!-- Others Section -->
     <section id="others" class="section hidden">
       <h2 class="text-2xl font-bold mb-4 pb-2 border-b-2 border-nativa-green text-nativa-green"><i class="fas fa-cogs mr-3"></i>Otros</h2>
-      <!-- Containers -->
       <h3 class="text-xl font-bold mb-4 text-gray-700"><i class="fas fa-box-open mr-2"></i>Contenedores</h3>
       <button onclick="openContainerModal('new')" class="bg-nativa-green bg-nativa-green-hover text-white px-4 py-2 rounded-md mb-4 transition-colors"><i class="fas fa-plus mr-2"></i>Nuevo Contenedor</button>
       <div class="bg-white rounded-lg shadow-lg overflow-x-auto mb-8">
@@ -265,7 +317,6 @@
           </tbody>
         </table>
       </div>
-      <!-- Trucks -->
       <h3 class="text-xl font-bold mb-4 text-gray-700"><i class="fas fa-truck mr-2"></i>Camiones</h3>
       <button onclick="openTruckModal('new')" class="bg-nativa-green bg-nativa-green-hover text-white px-4 py-2 rounded-md mb-4 transition-colors"><i class="fas fa-plus mr-2"></i>Nuevo Camión</button>
       <div class="bg-white rounded-lg shadow-lg overflow-x-auto">
@@ -377,7 +428,29 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
   <script>
-    // --- START RESPONSIVE NAVBAR SCRIPT ---
+    // --- Scroll Progress Bar Logic ---
+    window.addEventListener('scroll', () => {
+      const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      document.getElementById('progress-bar').style.width = `${scrolled}%`;
+    });
+
+    // --- User Type Logic (Placeholder) ---
+    const userType = 'Administrador'; // Or 'Usuario' based on auth
+    document.getElementById('user-type').textContent = userType;
+
+    // --- Horizontal Scroll Cue Logic ---
+    function checkTableScroll() {
+      const tableContainer = document.querySelector('.table-container');
+      if (tableContainer.scrollWidth > tableContainer.clientWidth) {
+        tableContainer.classList.add('scrollable');
+      } else {
+        tableContainer.classList.remove('scrollable');
+      }
+    }
+
+    // --- Responsive Navbar Script ---
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
     mobileMenuButton.addEventListener('click', () => {
@@ -389,9 +462,8 @@
         mobileMenu.classList.add('hidden');
       });
     });
-    // --- END RESPONSIVE NAVBAR SCRIPT ---
 
-    // --- START APPLICATION LOGIC SCRIPT ---
+    // --- Application Logic ---
     const clients = [
       { id: 1, name: "Cliente A", ruc: "12345678-9", contactName: "Juan Pérez", contactPhone: "123456789", email: "juan@cliente.com" },
       { id: 2, name: "Cliente B", ruc: "98765432-1", contactName: "Ana Gómez", contactPhone: "987654321", email: "ana@cliente.com" },
@@ -588,6 +660,7 @@
           </td>
         </tr>
       `).join('');
+      checkTableScroll(); // Update scroll cue after populating table
     }
 
     function updateQuotationStatus(id, newStatus) {
@@ -1087,6 +1160,8 @@
       populateTrucks();
       populateClientFilter();
       showSection('dashboard');
+      checkTableScroll();
+      window.addEventListener('resize', checkTableScroll);
 
       document.getElementById('filter-date-range').addEventListener('change', (e) => {
         const customDiv = document.getElementById('custom-date-range');
@@ -1137,7 +1212,6 @@
         populateQuotations();
       });
     });
-    // --- END APPLICATION LOGIC SCRIPT ---
   </script>
 </body>
 </html>
