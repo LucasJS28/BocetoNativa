@@ -94,12 +94,54 @@
             </div>
         </div>
         <h3 class="text-2xl mt-10 mb-4 font-bold text-gray-700">Cotizaciones Recientes</h3>
+        <!-- Add Search and Filter Controls -->
+        <div class="bg-white p-4 rounded-lg shadow-lg mb-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+              <label class="block text-sm font-bold mb-2">Buscar por Código o Cliente</label>
+              <input id="search-quotations" type="text" class="w-full p-2 border rounded-md" placeholder="Código o nombre del cliente">
+            </div>
+            <div>
+              <label class="block text-sm font-bold mb-2">Cliente</label>
+              <select id="filter-client" class="w-full p-2 border rounded-md">
+                <option value="">Todos los Clientes</option>
+                <!-- Populated by JS -->
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-bold mb-2">Rango de Fechas</label>
+              <select id="filter-date-range" class="w-full p-2 border rounded-md">
+                <option value="">Todos los Períodos</option>
+                <option value="last-week">Última Semana</option>
+                <option value="last-month">Último Mes</option>
+                <option value="last-3-months">Últimos 3 Meses</option>
+                <option value="last-6-months">Últimos 6 Meses</option>
+                <option value="last-year">Último Año</option>
+                <option value="custom">Personalizado</option>
+              </select>
+              <div id="custom-date-range" class="hidden mt-2">
+                <input id="filter-date-start" type="date" class="w-full p-2 border rounded-md">
+                <input id="filter-date-end" type="date" class="w-full p-2 border rounded-md mt-2">
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-bold mb-2">Estado</label>
+              <select id="filter-status" class="w-full p-2 border rounded-md">
+                <option value="">Todos los Estados</option>
+                <option value="draft">Borrador</option>
+                <option value="approved">Aprobado</option>
+              </select>
+            </div>
+          </div>
+          <button id="clear-filters" class="bg-gray-600 text-white px-4 py-2 rounded-md mt-4 hover:bg-gray-700 transition-colors"><i class="fas fa-times mr-2"></i>Limpiar Filtros</button>
+        </div>
         <div class="bg-white rounded-lg shadow-lg overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-gray-200">
                     <tr>
                         <th class="p-4 text-left font-semibold">Código</th>
                         <th class="p-4 text-left font-semibold">Cliente</th>
+                        <th class="p-4 text-left font-semibold">Fecha</th>
                         <th class="p-4 text-left font-semibold">Total</th>
                         <th class="p-4 text-left font-semibold">Estado</th>
                         <th class="p-4 text-left font-semibold">Acciones</th>
@@ -369,8 +411,16 @@
       { id: 2, name: "Tarifa Cliente A", clientId: 1, containerId: 1, truckId: 1, pricePerKm: 900, priceContainer: 45000 },
     ];
     const quotations = [
-      { id: 1, code: "QUOT-001", clientId: 1, total: 150000, status: "draft" },
-      { id: 2, code: "QUOT-002", clientId: 2, total: 200000, status: "approved" },
+      { id: 1, code: "QUOT-001", clientId: 1, date: "2025-09-12", total: 150000, status: "draft" },
+      { id: 2, code: "QUOT-002", clientId: 2, date: "2025-08-28", total: 200000, status: "approved" },
+      { id: 3, code: "QUOT-003", clientId: 1, date: "2025-08-13", total: 180000, status: "draft" },
+      { id: 4, code: "QUOT-004", clientId: 2, date: "2025-07-29", total: 220000, status: "approved" },
+      { id: 5, code: "QUOT-005", clientId: 1, date: "2025-07-14", total: 140000, status: "draft" },
+      { id: 6, code: "QUOT-006", clientId: 2, date: "2025-06-29", total: 190000, status: "approved" },
+      { id: 7, code: "QUOT-007", clientId: 1, date: "2025-06-14", total: 160000, status: "draft" },
+      { id: 8, code: "QUOT-008", clientId: 2, date: "2025-05-30", total: 210000, status: "approved" },
+      { id: 9, code: "QUOT-009", clientId: 1, date: "2025-05-15", total: 170000, status: "draft" },
+      { id: 10, code: "QUOT-010", clientId: 2, date: "2025-04-30", total: 230000, status: "approved" },
     ];
 
     let map, waypoints = [], control;
@@ -438,14 +488,104 @@
         trucks.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
     }
 
+    // Function to populate the client filter dropdown
+    function populateClientFilter() {
+      const filterClient = document.getElementById('filter-client');
+      filterClient.innerHTML = '<option value="">Todos los Clientes</option>' + 
+        clients.map(client => `<option value="${client.id}">${client.name}</option>`).join('');
+    }
+
+    // Function to handle date range filter
+    function getDateRange(filterValue) {
+      const currentDate = new Date('2025-09-12');
+      let startDate, endDate;
+      endDate = currentDate;
+
+      switch (filterValue) {
+        case 'last-week':
+          startDate = new Date(currentDate);
+          startDate.setDate(currentDate.getDate() - 7);
+          break;
+        case 'last-month':
+          startDate = new Date(currentDate);
+          startDate.setMonth(currentDate.getMonth() - 1);
+          break;
+        case 'last-3-months':
+          startDate = new Date(currentDate);
+          startDate.setMonth(currentDate.getMonth() - 3);
+          break;
+        case 'last-6-months':
+          startDate = new Date(currentDate);
+          startDate.setMonth(currentDate.getMonth() - 6);
+          break;
+        case 'last-year':
+          startDate = new Date(currentDate);
+          startDate.setFullYear(currentDate.getFullYear() - 1);
+          break;
+        case 'custom':
+          const start = document.getElementById('filter-date-start').value;
+          const end = document.getElementById('filter-date-end').value;
+          if (start && end) {
+            startDate = new Date(start);
+            endDate = new Date(end);
+          } else {
+            return null;
+          }
+          break;
+        default:
+          return null;
+      }
+      return { start: startDate.toISOString().split('T')[0], end: endDate.toISOString().split('T')[0] };
+    }
+
+    // Updated populateQuotations function with filtering and searching
     function populateQuotations() {
+      const searchQuery = document.getElementById('search-quotations')?.value.toLowerCase() || '';
+      const filterClient = document.getElementById('filter-client')?.value || '';
+      const filterStatus = document.getElementById('filter-status')?.value || '';
+      const filterDateRange = document.getElementById('filter-date-range')?.value || '';
+
+      let filteredQuotations = quotations;
+
+      // Filter by client
+      if (filterClient) {
+        filteredQuotations = filteredQuotations.filter(q => q.clientId === parseInt(filterClient));
+      }
+
+      // Filter by status
+      if (filterStatus) {
+        filteredQuotations = filteredQuotations.filter(q => q.status === filterStatus);
+      }
+
+      // Filter by date range
+      if (filterDateRange) {
+        const dateRange = getDateRange(filterDateRange);
+        if (dateRange) {
+          filteredQuotations = filteredQuotations.filter(q => {
+            const quoteDate = new Date(q.date);
+            const startDate = new Date(dateRange.start);
+            const endDate = new Date(dateRange.end);
+            return quoteDate >= startDate && quoteDate <= endDate;
+          });
+        }
+      }
+
+      // Search by code or client name
+      if (searchQuery) {
+        filteredQuotations = filteredQuotations.filter(q => {
+          const clientName = clients.find(c => c.id === q.clientId)?.name.toLowerCase() || '';
+          return q.code.toLowerCase().includes(searchQuery) || clientName.includes(searchQuery);
+        });
+      }
+
       const table = document.getElementById('quotations-table');
-      table.innerHTML = quotations.map(q => `
+      table.innerHTML = filteredQuotations.map(q => `
         <tr class="border-b hover:bg-gray-50">
           <td class="p-4">${q.code}</td>
-          <td class="p-4">${clients.find(c => c.id === q.clientId)?.name}</td>
+          <td class="p-4">${clients.find(c => c.id === q.clientId)?.name || 'N/A'}</td>
+          <td class="p-4">${q.date}</td>
           <td class="p-4">${q.total.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</td>
-          <td class="p-4"><span class="px-2 py-1 text-xs rounded-full ${q.status === 'approved' ? 'bg-green-200 text-green-800' : 'bg-yellow-200 text-yellow-800'}">${q.status}</span></td>
+          <td class="p-4"><span class="px-2 py-1 text-xs rounded-full ${q.status === 'approved' ? 'bg-green-200 text-green-800' : 'bg-yellow-200 text-yellow-800'}">${q.status === 'draft' ? 'Borrador' : 'Aprobado'}</span></td>
           <td class="p-4">
             <button onclick="viewQuotation(${q.id})" class="text-blue-500 hover:underline"><i class="fas fa-eye"></i></button>
             <button onclick="generatePDF(${q.id})" class="text-red-500 ml-3 hover:underline"><i class="fas fa-file-pdf"></i></button>
@@ -519,6 +659,7 @@
         clients.push(client);
       }
       populateClients();
+      populateClientFilter();
       closeClientModal();
     });
 
@@ -527,6 +668,7 @@
         const index = clients.findIndex(c => c.id === id);
         clients.splice(index, 1);
         populateClients();
+        populateClientFilter();
       }
     }
 
@@ -904,11 +1046,13 @@
       }
       const totalText = document.querySelector('#calculation-details span:last-child').textContent;
       const totalValue = parseFloat(totalText.replace(/\$|\./g, '').replace(',', '.'));
+      const today = new Date().toISOString().split('T')[0];
 
       const quotation = {
         id: Date.now(),
         code: `QUOT-${Date.now().toString().slice(-4)}`,
         clientId: parseInt(document.getElementById('client-id').value),
+        date: today,
         tariffId: tariffId,
         total: totalValue,
         status: 'draft',
@@ -933,7 +1077,21 @@
       populateQuotations();
       populateContainers();
       populateTrucks();
+      populateClientFilter();
       showSection('dashboard');
+
+      // Date range dropdown listener
+      document.getElementById('filter-date-range').addEventListener('change', (e) => {
+        const customDiv = document.getElementById('custom-date-range');
+        if (e.target.value === 'custom') {
+          customDiv.classList.remove('hidden');
+        } else {
+          customDiv.classList.add('hidden');
+          document.getElementById('filter-date-start').value = '';
+          document.getElementById('filter-date-end').value = '';
+        }
+        populateQuotations();
+      });
 
       document.getElementById('client-id').addEventListener('change', updateTariffDetails);
       document.getElementById('tariff-id').addEventListener('change', updateTariffDetails);
@@ -954,6 +1112,23 @@
       });
       document.getElementById('dest-address').addEventListener('input', () => {
         routes[0].destinationName = document.getElementById('dest-address').value;
+      });
+
+      // Add event listeners for search and filters
+      document.getElementById('search-quotations')?.addEventListener('input', populateQuotations);
+      document.getElementById('filter-client')?.addEventListener('change', populateQuotations);
+      document.getElementById('filter-status')?.addEventListener('change', populateQuotations);
+      document.getElementById('filter-date-start')?.addEventListener('change', populateQuotations);
+      document.getElementById('filter-date-end')?.addEventListener('change', populateQuotations);
+      document.getElementById('clear-filters')?.addEventListener('click', () => {
+        document.getElementById('search-quotations').value = '';
+        document.getElementById('filter-client').value = '';
+        document.getElementById('filter-status').value = '';
+        document.getElementById('filter-date-range').value = '';
+        document.getElementById('filter-date-start').value = '';
+        document.getElementById('filter-date-end').value = '';
+        document.getElementById('custom-date-range').classList.add('hidden');
+        populateQuotations();
       });
     });
     // --- END APPLICATION LOGIC SCRIPT ---
