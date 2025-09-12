@@ -29,6 +29,7 @@
         <button onclick="showSection('clients')" class="px-4 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors">Clientes</button>
         <button onclick="showSection('tariffs')" class="px-4 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors">Tarifas</button>
         <button onclick="showSection('create-quotation')" class="px-4 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors">Crear Cotización</button>
+        <button onclick="showSection('others')" class="px-4 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors">Otros</button>
       </div>
     </div>
   </nav>
@@ -136,14 +137,14 @@
           </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
-              <label class="block text-sm font-bold mb-2">Origen</label>
-              <input id="origin-address" type="text" class="w-full p-2 border rounded-md" placeholder="Ingrese el lugar de origen">
-            </div>
-            <div>
-              <label class="block text-sm font-bold mb-2">Destino</label>
-              <input id="dest-address" type="text" class="w-full p-2 border rounded-md" placeholder="Ingrese el lugar de destino">
-            </div>
+          <div>
+            <label class="block text-sm font-bold mb-2">Origen</label>
+            <input id="origin-address" type="text" class="w-full p-2 border rounded-md" placeholder="Ingrese el lugar de origen">
+          </div>
+          <div>
+            <label class="block text-sm font-bold mb-2">Destino</label>
+            <input id="dest-address" type="text" class="w-full p-2 border rounded-md" placeholder="Ingrese el lugar de destino">
+          </div>
         </div>
         <div class="mb-4 flex items-center">
           <label class="block text-sm font-bold mr-2">Km</label>
@@ -152,6 +153,7 @@
         </div>
         <div class="mb-4">
           <label class="block text-sm font-bold mb-2"><input type="checkbox" id="return-trip" class="mr-2"> Incluir Vuelta</label>
+          <label class="block text-sm font-bold mb-2"><input type="checkbox" id="return-to-origin" class="mr-2"> Volver al Origen (x2 distancia)</label>
         </div>
         <div id="additional-destinations" class="mb-4"></div>
         <div id="calculation-details" class="mb-4 border-t pt-4 mt-4"></div>
@@ -159,9 +161,44 @@
         <button type="button" onclick="generatePDF()" class="bg-gray-600 text-white px-4 py-2 rounded-md ml-2 hover:bg-gray-700 transition-colors">Exportar PDF</button>
       </form>
     </section>
+
+    <!-- Others Section -->
+    <section id="others" class="section hidden">
+      <h2 class="text-2xl font-bold mb-4 pb-2 border-b-2 border-nativa-green text-nativa-green">Otros</h2>
+      <!-- Containers -->
+      <h3 class="text-xl font-bold mb-4 text-gray-700">Contenedores</h3>
+      <button onclick="openContainerModal('new')" class="bg-nativa-green text-white px-4 py-2 rounded-md mb-4 transition-colors">Nuevo Contenedor</button>
+      <table class="w-full bg-white rounded-lg shadow-md overflow-hidden mb-8">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="p-3 text-left">Nombre</th>
+            <th class="p-3 text-left">Precio Base</th>
+            <th class="p-3 text-left">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="containers-table">
+          <!-- Filled by JS -->
+        </tbody>
+      </table>
+      <!-- Trucks -->
+      <h3 class="text-xl font-bold mb-4 text-gray-700">Camiones</h3>
+      <button onclick="openTruckModal('new')" class="bg-nativa-green text-white px-4 py-2 rounded-md mb-4 transition-colors">Nuevo Camión</button>
+      <table class="w-full bg-white rounded-lg shadow-md overflow-hidden">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="p-3 text-left">Nombre</th>
+            <th class="p-3 text-left">Capacidad (Toneladas)</th>
+            <th class="p-3 text-left">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="trucks-table">
+          <!-- Filled by JS -->
+        </tbody>
+      </table>
+    </section>
   </div>
 
-  <!-- Modals (structure unchanged, but buttons will inherit new styles) -->
+  <!-- Modals -->
   <div id="client-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
     <div class="bg-white p-6 rounded-lg shadow-xl w-1/2">
       <h2 id="client-modal-title" class="text-xl font-bold mb-4">Nuevo Cliente</h2>
@@ -193,6 +230,42 @@
     </div>
   </div>
 
+  <div id="container-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg shadow-xl w-1/2">
+      <h2 id="container-modal-title" class="text-xl font-bold mb-4">Nuevo Contenedor</h2>
+      <form id="container-form">
+        <div class="mb-4">
+          <label class="block text-sm font-bold mb-2">Nombre</label>
+          <input id="container-name" type="text" class="w-full p-2 border rounded-md" required>
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-bold mb-2">Precio Base</label>
+          <input id="container-base-price" type="number" step="0.01" class="w-full p-2 border rounded-md" required>
+        </div>
+        <button type="submit" class="bg-nativa-green text-white px-4 py-2 rounded-md transition-colors">Guardar</button>
+        <button type="button" onclick="closeContainerModal()" class="bg-gray-600 text-white px-4 py-2 rounded-md ml-2 hover:bg-gray-700 transition-colors">Cerrar</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="truck-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg shadow-xl w-1/2">
+      <h2 id="truck-modal-title" class="text-xl font-bold mb-4">Nuevo Camión</h2>
+      <form id="truck-form">
+        <div class="mb-4">
+          <label class="block text-sm font-bold mb-2">Nombre</label>
+          <input id="truck-name" type="text" class="w-full p-2 border rounded-md" required>
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-bold mb-2">Capacidad (Toneladas)</label>
+          <input id="truck-capacity" type="number" step="0.01" class="w-full p-2 border rounded-md" required>
+        </div>
+        <button type="submit" class="bg-nativa-green text-white px-4 py-2 rounded-md transition-colors">Guardar</button>
+        <button type="button" onclick="closeTruckModal()" class="bg-gray-600 text-white px-4 py-2 rounded-md ml-2 hover:bg-gray-700 transition-colors">Cerrar</button>
+      </form>
+    </div>
+  </div>
+
   <div id="map-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
     <div class="bg-white p-6 rounded-lg shadow-xl w-3/4">
       <h2 class="text-xl font-bold mb-4">Seleccionar Ruta</h2>
@@ -208,9 +281,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
   <script>
-    // El código JavaScript no necesita cambios para esta actualización visual.
-    // ... (Tu código JS original va aquí) ...
-        // Datos simulados (en producción, vendrían de la API)
+    // Datos simulados (en producción, vendrían de la API)
     const clients = [
       { id: 1, name: "Cliente A", ruc: "12345678-9", contactName: "Juan Pérez", contactPhone: "123456789", email: "juan@cliente.com" },
       { id: 2, name: "Cliente B", ruc: "98765432-1", contactName: "Ana Gómez", contactPhone: "987654321", email: "ana@cliente.com" },
@@ -284,7 +355,6 @@
         </tr>
       `).join('');
 
-      // Llenar dropdown de tarifas en el formulario de cotización
       const tariffSelect = document.getElementById('tariff-id');
       tariffSelect.innerHTML = '<option value="">Seleccionar Tarifa</option>' + 
         tariffs.map(tariff => {
@@ -312,6 +382,34 @@
           <td class="p-3">
             <button onclick="viewQuotation(${q.id})" class="text-blue-500 hover:underline">Ver</button>
             <button onclick="generatePDF(${q.id})" class="text-green-500 ml-2 hover:underline">PDF</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function populateContainers() {
+      const table = document.getElementById('containers-table');
+      table.innerHTML = containers.map(container => `
+        <tr class="border-b hover:bg-gray-50">
+          <td class="p-3">${container.name}</td>
+          <td class="p-3">${container.basePrice}</td>
+          <td class="p-3">
+            <button onclick="openContainerModal('edit', ${container.id})" class="text-blue-500 hover:underline">Editar</button>
+            <button onclick="deleteContainer(${container.id})" class="text-red-500 ml-2 hover:underline">Eliminar</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function populateTrucks() {
+      const table = document.getElementById('trucks-table');
+      table.innerHTML = trucks.map(truck => `
+        <tr class="border-b hover:bg-gray-50">
+          <td class="p-3">${truck.name}</td>
+          <td class="p-3">${truck.capacityTons}</td>
+          <td class="p-3">
+            <button onclick="openTruckModal('edit', ${truck.id})" class="text-blue-500 hover:underline">Editar</button>
+            <button onclick="deleteTruck(${truck.id})" class="text-red-500 ml-2 hover:underline">Eliminar</button>
           </td>
         </tr>
       `).join('');
@@ -415,6 +513,94 @@
       }
     }
 
+    // Modal Contenedores
+    let currentContainerId = null;
+    function openContainerModal(mode, id = null) {
+      currentContainerId = id;
+      document.getElementById('container-modal-title').textContent = mode === 'new' ? 'Nuevo Contenedor' : 'Editar Contenedor';
+      if (id) {
+        const container = containers.find(c => c.id === id);
+        document.getElementById('container-name').value = container.name;
+        document.getElementById('container-base-price').value = container.basePrice;
+      } else {
+        document.getElementById('container-form').reset();
+      }
+      document.getElementById('container-modal').classList.add('active');
+    }
+
+    function closeContainerModal() {
+      document.getElementById('container-modal').classList.remove('active');
+    }
+
+    document.getElementById('container-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const container = {
+        id: currentContainerId || Date.now(),
+        name: document.getElementById('container-name').value,
+        basePrice: parseFloat(document.getElementById('container-base-price').value),
+      };
+      if (currentContainerId) {
+        containers[containers.findIndex(c => c.id === currentContainerId)] = container;
+      } else {
+        containers.push(container);
+      }
+      populateContainers();
+      populateTariffs();
+      closeContainerModal();
+    });
+
+    function deleteContainer(id) {
+      if (confirm('¿Eliminar contenedor?')) {
+        containers.splice(containers.findIndex(c => c.id === id), 1);
+        populateContainers();
+        populateTariffs();
+      }
+    }
+
+    // Modal Camiones
+    let currentTruckId = null;
+    function openTruckModal(mode, id = null) {
+      currentTruckId = id;
+      document.getElementById('truck-modal-title').textContent = mode === 'new' ? 'Nuevo Camión' : 'Editar Camión';
+      if (id) {
+        const truck = trucks.find(t => t.id === id);
+        document.getElementById('truck-name').value = truck.name;
+        document.getElementById('truck-capacity').value = truck.capacityTons;
+      } else {
+        document.getElementById('truck-form').reset();
+      }
+      document.getElementById('truck-modal').classList.add('active');
+    }
+
+    function closeTruckModal() {
+      document.getElementById('truck-modal').classList.remove('active');
+    }
+
+    document.getElementById('truck-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const truck = {
+        id: currentTruckId || Date.now(),
+        name: document.getElementById('truck-name').value,
+        capacityTons: parseFloat(document.getElementById('truck-capacity').value),
+      };
+      if (currentTruckId) {
+        trucks[trucks.findIndex(t => t.id === currentTruckId)] = truck;
+      } else {
+        trucks.push(truck);
+      }
+      populateTrucks();
+      populateTariffs();
+      closeTruckModal();
+    });
+
+    function deleteTruck(id) {
+      if (confirm('¿Eliminar camión?')) {
+        trucks.splice(trucks.findIndex(t => t.id === id), 1);
+        populateTrucks();
+        populateTariffs();
+      }
+    }
+
     // Actualizar detalles de la tarifa seleccionada
     function updateTariffDetails() {
       const tariffId = parseInt(document.getElementById('tariff-id').value);
@@ -436,10 +622,11 @@
     // Manejar rutas dinámicas
     function updateReturnTripFields() {
       const returnTrip = document.getElementById('return-trip').checked;
+      const returnToOrigin = document.getElementById('return-to-origin').checked;
       const additionalDestinations = document.getElementById('additional-destinations');
       additionalDestinations.innerHTML = '';
 
-      if (returnTrip) {
+      if (returnTrip && !returnToOrigin) {
         routes[1] = routes[1] || { origin: routes[0].destination, originName: routes[0].destinationName, destination: null, destinationName: '', km: 0 };
         additionalDestinations.innerHTML = `
           <div class="mb-4">
@@ -472,7 +659,6 @@
       currentRouteIndex = routeIndex;
       document.getElementById('map-modal').classList.add('active');
       
-      // Delay map initialization to ensure container is visible
       setTimeout(() => {
         if (!map) {
           map = L.map('map').setView([-33.4489, -70.6693], 13); // Santiago, Chile
@@ -480,7 +666,7 @@
             attribution: '&copy; OpenStreetMap contributors'
           }).addTo(map);
         } else {
-          map.invalidateSize(); // Recalculate map size if it was initialized while hidden
+          map.invalidateSize();
         }
 
         waypoints = [];
@@ -489,11 +675,10 @@
           control = null;
         }
         map.eachLayer(function (layer) {
-            if (layer instanceof L.Marker) {
-                map.removeLayer(layer);
-            }
+          if (layer instanceof L.Marker) {
+            map.removeLayer(layer);
+          }
         });
-
 
         document.getElementById('map-distance').textContent = '0 km';
 
@@ -576,6 +761,8 @@
     function calculateQuotation() {
       const clientId = parseInt(document.getElementById('client-id').value);
       const tariffId = parseInt(document.getElementById('tariff-id').value);
+      const returnTrip = document.getElementById('return-trip').checked;
+      const returnToOrigin = document.getElementById('return-to-origin').checked;
 
       const tariff = tariffs.find(t => t.id === tariffId);
       if (!tariff) {
@@ -585,12 +772,27 @@
 
       let totalKm = 0;
       let costoKmDetails = '';
-      routes.forEach((route, index) => {
-        const kmInput = document.getElementById(`km${index ? '-' + index : ''}`);
-        const km = route.km || (kmInput ? Math.round(parseFloat(kmInput.value) || 0) : 0);
-        totalKm += km;
-        costoKmDetails += `<p><strong>Costo Tramo ${index === 0 ? 'Ida' : 'Vuelta'} (${km} km):</strong> ${(tariff.pricePerKm * km).toFixed(0)} CLP</p>`;
-      });
+      const kmInput = document.getElementById('km');
+      let km = routes[0].km || (kmInput ? Math.round(parseFloat(kmInput.value) || 0) : 0);
+
+      if (returnToOrigin) {
+        // Si "Volver al Origen" está seleccionado, duplicar la distancia del tramo principal
+        totalKm = km * 2;
+        costoKmDetails = `<p><strong>Costo Tramo Ida y Vuelta (${totalKm} km):</strong> ${(tariff.pricePerKm * totalKm).toFixed(0)} CLP</p>`;
+      } else if (returnTrip) {
+        // Si "Incluir Vuelta" está seleccionado, sumar los kilómetros de ambos tramos
+        totalKm = km;
+        costoKmDetails = `<p><strong>Costo Tramo Ida (${km} km):</strong> ${(tariff.pricePerKm * km).toFixed(0)} CLP</p>`;
+        if (routes[1]) {
+          const kmReturn = routes[1].km || (document.getElementById('km-1') ? Math.round(parseFloat(document.getElementById('km-1').value) || 0) : 0);
+          totalKm += kmReturn;
+          costoKmDetails += `<p><strong>Costo Tramo Vuelta (${kmReturn} km):</strong> ${(tariff.pricePerKm * kmReturn).toFixed(0)} CLP</p>`;
+        }
+      } else {
+        // Solo el tramo principal
+        totalKm = km;
+        costoKmDetails = `<p><strong>Costo Tramo Ida (${km} km):</strong> ${(tariff.pricePerKm * km).toFixed(0)} CLP</p>`;
+      }
 
       const costoContenedor = tariff.priceContainer;
       const subtotal = (tariff.pricePerKm * totalKm) + costoContenedor;
@@ -639,40 +841,42 @@
 
     // Inicializar
     document.addEventListener('DOMContentLoaded', () => {
-        populateClients();
-        populateTariffs();
-        populateQuotations();
-        showSection('dashboard');
+      populateClients();
+      populateTariffs();
+      populateQuotations();
+      populateContainers();
+      populateTrucks();
+      showSection('dashboard');
 
-        // Recalcular al cambiar inputs
-        document.getElementById('client-id').addEventListener('change', () => {
-        //   populateTariffs(); // Esta línea puede ser molesta si el usuario ya eligió una tarifa
-          updateTariffDetails();
-          calculateQuotation();
-        });
-        document.getElementById('tariff-id').addEventListener('change', () => {
-          updateTariffDetails();
-          calculateQuotation();
-        });
-        document.getElementById('km').addEventListener('input', () => {
-          const kmValue = Math.round(parseFloat(document.getElementById('km').value) || 0);
-          routes[0].km = kmValue;
-          document.getElementById('km').value = kmValue;
-          calculateQuotation();
-        });
-        document.getElementById('return-trip').addEventListener('change', updateReturnTripFields);
-        document.getElementById('origin-address').addEventListener('input', () => {
-          routes[0].originName = document.getElementById('origin-address').value;
-        });
-        document.getElementById('dest-address').addEventListener('input', () => {
-          routes[0].destinationName = document.getElementById('dest-address').value;
-          if (routes[1]) {
-            routes[1].originName = routes[0].destinationName;
-            // No actualizamos el input de vuelta automáticamente, puede ser confuso.
+      document.getElementById('client-id').addEventListener('change', () => {
+        updateTariffDetails();
+        calculateQuotation();
+      });
+      document.getElementById('tariff-id').addEventListener('change', () => {
+        updateTariffDetails();
+        calculateQuotation();
+      });
+      document.getElementById('km').addEventListener('input', () => {
+        const kmValue = Math.round(parseFloat(document.getElementById('km').value) || 0);
+        routes[0].km = kmValue;
+        document.getElementById('km').value = kmValue;
+        calculateQuotation();
+      });
+      document.getElementById('return-trip').addEventListener('change', updateReturnTripFields);
+      document.getElementById('return-to-origin').addEventListener('change', updateReturnTripFields);
+      document.getElementById('origin-address').addEventListener('input', () => {
+        routes[0].originName = document.getElementById('origin-address').value;
+      });
+      document.getElementById('dest-address').addEventListener('input', () => {
+        routes[0].destinationName = document.getElementById('dest-address').value;
+        if (routes[1]) {
+          routes[1].originName = routes[0].destinationName;
+          if (document.getElementById('dest-address-1')) {
+            document.getElementById('dest-address-1').value = routes[1].destinationName;
           }
-        });
+        }
+      });
     });
-
   </script>
 </body>
 </html>
