@@ -31,43 +31,40 @@
     z-index: 50; 
     width: 0; 
   }
-  #quotations-container {
-    position: relative;
-    overflow-x: auto;
-    scroll-behavior: smooth; /* Smooth scrolling for better UX */
-  }
-  #quotations-container::before,
-  #quotations-container::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 40px; /* Slightly wider for better visibility */
-    z-index: 10;
-    pointer-events: none;
-    transition: opacity 0.5s ease; /* Smoother transition (0.5s) */
-    opacity: 0;
-  }
-  #quotations-container::before {
-    left: 0;
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.15), transparent);
-    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.15), transparent), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%231E3B14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>'); /* Left arrow */
-    background-position: center right 10px;
-    background-repeat: no-repeat;
-  }
-  #quotations-container::after {
-    right: 0;
-    background: linear-gradient(to left, rgba(0, 0, 0, 0.15), transparent);
-    background-image: linear-gradient(to left, rgba(0, 0, 0, 0.15), transparent), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%231E3B14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>'); /* Right arrow */
-    background-position: center left 10px;
-    background-repeat: no-repeat;
-  }
-  #quotations-container.has-scroll-left::before {
-    opacity: 1; /* Show left shadow when not at start */
-  }
-  #quotations-container.has-scroll-right::after {
-    opacity: var(--right-shadow-opacity, 1); /* Dynamic opacity for right shadow */
-  }
+  /* Simple and elegant scroll shadow effect for quotations table */
+#quotations-container {
+  position: relative;
+  overflow-x: auto;
+  scroll-behavior: smooth; /* Smooth scrolling for better UX */
+  border-radius: 0.5rem; /* Matches table's rounded corners */
+}
+
+/* Left and right shadow indicators */
+#quotations-container::before,
+#quotations-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 20px; /* Slim shadow area for a subtle effect */
+  z-index: 10;
+  pointer-events: none; /* Allows interaction with the table */
+  transition: box-shadow 0.3s ease; /* Smooth shadow transition */
+}
+
+/* Left shadow */
+#quotations-container::before {
+  left: 0;
+  box-shadow: inset 10px 0 8px -8px rgba(0, 0, 0, 0.2); /* Subtle inner shadow */
+  opacity: var(--left-shadow-opacity, 0); /* Controlled by JS */
+}
+
+/* Right shadow */
+#quotations-container::after {
+  right: 0;
+  box-shadow: inset -10px 0 8px -8px rgba(0, 0, 0, 0.2); /* Subtle inner shadow */
+  opacity: var(--right-shadow-opacity, 0); /* Controlled by JS */
+}
   /* Improved table styling */
   table {
     border-collapse: collapse;
@@ -671,31 +668,33 @@ function populateQuotations() {
     </tr>
   `).join('');
 
-  // Update scroll shadow dynamically
+  // Update scroll shadow dynamically with improved fade and no "cutting" effect
   const container = document.getElementById('quotations-container');
   function updateScrollShadow() {
-    if (container.scrollWidth > container.clientWidth) {
-      const scrollLeft = container.scrollLeft;
-      const maxScroll = container.scrollWidth - container.clientWidth;
-      const isScrolledToStart = scrollLeft <= 1; // Small buffer for start
-      const fadeThreshold = 50; // Pixels from the end where fading starts
-
-      // Left shadow
-      container.classList.toggle('has-scroll-left', !isScrolledToStart);
-
-      // Right shadow with gradual fade
-      const distanceToEnd = maxScroll - scrollLeft;
-      let rightShadowOpacity = 1;
-      if (distanceToEnd <= fadeThreshold) {
-        rightShadowOpacity = distanceToEnd / fadeThreshold; // Linear fade
-        if (rightShadowOpacity < 0) rightShadowOpacity = 0;
-      }
-      container.classList.toggle('has-scroll-right', distanceToEnd > 90);
-      container.style.setProperty('--right-shadow-opacity', rightShadowOpacity.toFixed(2));
-    } else {
-      container.classList.remove('has-scroll-left', 'has-scroll-right');
+    if (container.scrollWidth <= container.clientWidth) {
+      container.style.setProperty('--left-shadow-opacity', '0');
       container.style.setProperty('--right-shadow-opacity', '0');
+      return;
     }
+
+    const scrollLeft = container.scrollLeft;
+    const maxScroll = container.scrollWidth - container.clientWidth;
+    const fadeThreshold = 50;
+
+    // Left shadow: fade in as scrolling starts
+    let leftOpacity = 0;
+    if (scrollLeft > 0) {
+      leftOpacity = Math.min(1, scrollLeft / fadeThreshold);
+    }
+    container.style.setProperty('--left-shadow-opacity', leftOpacity.toFixed(2));
+
+    // Right shadow: fade out as approaching end
+    const distanceToEnd = maxScroll - scrollLeft;
+    let rightOpacity = 0;
+    if (distanceToEnd > 0) {
+      rightOpacity = Math.min(1, distanceToEnd / fadeThreshold);
+    }
+    container.style.setProperty('--right-shadow-opacity', rightOpacity.toFixed(2));
   }
 
   // Initial check
@@ -704,6 +703,19 @@ function populateQuotations() {
   // Add scroll event listener
   container.removeEventListener('scroll', updateScrollShadow); // Prevent duplicate listeners
   container.addEventListener('scroll', updateScrollShadow);
+
+  // Add click handler for arrows: left to start, right to end
+  const clickAreaSize = 60;
+  container.addEventListener('click', (e) => {
+    const rect = container.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+
+    if (clickX < clickAreaSize && container.scrollLeft > 0) {
+      container.scrollTo({ left: 0, behavior: 'smooth' });
+    } else if (clickX > rect.width - clickAreaSize && (container.scrollWidth - container.clientWidth - container.scrollLeft > 0)) {
+      container.scrollTo({ left: container.scrollWidth - container.clientWidth, behavior: 'smooth' });
+    }
+  });
 }
 
 function updateQuotationStatus(id, newStatus) {
