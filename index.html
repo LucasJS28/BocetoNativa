@@ -216,7 +216,7 @@
             <p><strong>Contenedor:</strong> <span id="tariff-container">N/A</span></p>
             <p><strong>Camión:</strong> <span id="tariff-truck">N/A</span></p>
             <p><strong>Precio por Km:</strong> <span id="tariff-price-per-km">0</span> CLP</p>
-            <p><strong>Precio Contenedor:</strong> <span id="tariff-price-container">0</span> CLP</p>
+            <p><strong>Precio Base Contenedor:</strong> <span id="tariff-base-price">0</span> CLP</p>
           </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -312,7 +312,6 @@
         <div class="mb-4"><label class="block text-sm font-bold mb-2">Contenedor</label><select id="tariff-container-id" class="w-full p-2 border rounded-md"></select></div>
         <div class="mb-4"><label class="block text-sm font-bold mb-2">Camión</label><select id="tariff-truck-id" class="w-full p-2 border rounded-md"></select></div>
         <div class="mb-4"><label class="block text-sm font-bold mb-2">Precio por Km</label><input id="tariff-price-per-km" type="number" step="0.01" class="w-full p-2 border rounded-md" required></div>
-        <div class="mb-4"><label class="block text-sm font-bold mb-2">Precio Contenedor</label><input id="tariff-price-container" type="number" step="0.01" class="w-full p-2 border rounded-md" required></div>
         <div class="flex justify-end">
           <button type="button" onclick="closeTariffModal()" class="bg-gray-600 text-white px-4 py-2 rounded-md mr-2 hover:bg-gray-700 transition-colors">Cerrar</button>
           <button type="submit" class="bg-nativa-green bg-nativa-green-hover text-white px-4 py-2 rounded-md transition-colors">Guardar</button>
@@ -406,20 +405,20 @@
       { id: 2, name: "Camión 20T", capacityTons: 20 },
     ];
     const tariffs = [
-      { id: 1, name: "Tarifa Estándar", clientId: null, containerId: 1, truckId: 1, pricePerKm: 1000, priceContainer: 50000 },
-      { id: 2, name: "Tarifa Cliente A", clientId: 1, containerId: 1, truckId: 1, pricePerKm: 900, priceContainer: 45000 },
+      { id: 1, name: "Tarifa Estándar", clientId: null, containerId: 1, truckId: 1, pricePerKm: 1000 },
+      { id: 2, name: "Tarifa Cliente A", clientId: 1, containerId: 1, truckId: 1, pricePerKm: 900 },
     ];
     const quotations = [
-      { id: 1, code: "QUOT-001", clientId: 1, date: "2025-09-12", total: 150000, status: "draft" },
-      { id: 2, code: "QUOT-002", clientId: 2, date: "2025-08-28", total: 200000, status: "approved" },
-      { id: 3, code: "QUOT-003", clientId: 1, date: "2025-08-13", total: 180000, status: "draft" },
-      { id: 4, code: "QUOT-004", clientId: 2, date: "2025-07-29", total: 220000, status: "approved" },
-      { id: 5, code: "QUOT-005", clientId: 1, date: "2025-07-14", total: 140000, status: "draft" },
-      { id: 6, code: "QUOT-006", clientId: 2, date: "2025-06-29", total: 190000, status: "approved" },
-      { id: 7, code: "QUOT-007", clientId: 1, date: "2025-06-14", total: 160000, status: "draft" },
-      { id: 8, code: "QUOT-008", clientId: 2, date: "2025-05-30", total: 210000, status: "approved" },
-      { id: 9, code: "QUOT-009", clientId: 1, date: "2025-05-15", total: 170000, status: "draft" },
-      { id: 10, code: "QUOT-010", clientId: 2, date: "2025-04-30", total: 230000, status: "approved" },
+      { id: 1, code: "QUOT-001", clientId: 1, date: "2025-09-12", total: 150000, status: "draft", tariffId: 1 },
+      { id: 2, code: "QUOT-002", clientId: 2, date: "2025-08-28", total: 200000, status: "approved", tariffId: 2 },
+      { id: 3, code: "QUOT-003", clientId: 1, date: "2025-08-13", total: 180000, status: "draft", tariffId: 1 },
+      { id: 4, code: "QUOT-004", clientId: 2, date: "2025-07-29", total: 220000, status: "approved", tariffId: 2 },
+      { id: 5, code: "QUOT-005", clientId: 1, date: "2025-07-14", total: 140000, status: "draft", tariffId: 1 },
+      { id: 6, code: "QUOT-006", clientId: 2, date: "2025-06-29", total: 190000, status: "approved", tariffId: 2 },
+      { id: 7, code: "QUOT-007", clientId: 1, date: "2025-06-14", total: 160000, status: "draft", tariffId: 1 },
+      { id: 8, code: "QUOT-008", clientId: 2, date: "2025-05-30", total: 210000, status: "approved", tariffId: 2 },
+      { id: 9, code: "QUOT-009", clientId: 1, date: "2025-05-15", total: 170000, status: "draft", tariffId: 1 },
+      { id: 10, code: "QUOT-010", clientId: 2, date: "2025-04-30", total: 230000, status: "approved", tariffId: 2 },
     ];
 
     let map, waypoints = [], control;
@@ -689,7 +688,6 @@
         document.getElementById('tariff-container-id').value = tariff.containerId;
         document.getElementById('tariff-truck-id').value = tariff.truckId;
         document.getElementById('tariff-price-per-km').value = tariff.pricePerKm;
-        document.getElementById('tariff-price-container').value = tariff.priceContainer;
       }
       document.getElementById('tariff-modal').classList.add('active');
     }
@@ -707,7 +705,6 @@
         containerId: parseInt(document.getElementById('tariff-container-id').value),
         truckId: parseInt(document.getElementById('tariff-truck-id').value),
         pricePerKm: parseFloat(document.getElementById('tariff-price-per-km').value),
-        priceContainer: parseFloat(document.getElementById('tariff-price-container').value),
       };
       if (currentTariffId) {
         const index = tariffs.findIndex(t => t.id === currentTariffId);
@@ -819,15 +816,16 @@
       const tariffId = parseInt(document.getElementById('tariff-id').value);
       const tariff = tariffs.find(t => t.id === tariffId);
       if (tariff) {
-        document.getElementById('tariff-container').textContent = containers.find(c => c.id === tariff.containerId)?.name || 'N/A';
+        const container = containers.find(c => c.id === tariff.containerId);
+        document.getElementById('tariff-container').textContent = container ? container.name : 'N/A';
         document.getElementById('tariff-truck').textContent = trucks.find(t => t.id === tariff.truckId)?.name || 'N/A';
         document.getElementById('tariff-price-per-km').textContent = tariff.pricePerKm;
-        document.getElementById('tariff-price-container').textContent = tariff.priceContainer;
+        document.getElementById('tariff-base-price').textContent = container ? container.basePrice : '0';
       } else {
         document.getElementById('tariff-container').textContent = 'N/A';
         document.getElementById('tariff-truck').textContent = 'N/A';
         document.getElementById('tariff-price-per-km').textContent = '0';
-        document.getElementById('tariff-price-container').textContent = '0';
+        document.getElementById('tariff-base-price').textContent = '0';
       }
       calculateQuotation();
     }
@@ -1006,6 +1004,12 @@
         return;
       }
 
+      const container = containers.find(c => c.id === tariff.containerId);
+      if (!container) {
+        calculationDetails.innerHTML = '<p class="text-red-500 font-bold">Contenedor no encontrado para la tarifa seleccionada.</p>';
+        return;
+      }
+
       let totalKm = 0;
       let costoKmDetails = '';
       const kmInput = document.getElementById('km');
@@ -1024,7 +1028,7 @@
         }
       }
 
-      const costoContenedor = tariff.priceContainer;
+      const costoContenedor = container.basePrice;
       const subtotal = (tariff.pricePerKm * totalKm) + costoContenedor;
       const iva = subtotal * 0.19;
       const total = subtotal + iva;
